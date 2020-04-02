@@ -1,5 +1,7 @@
 /* eslint camelcase: 0 */
 
+import { UserStatus } from './enums';
+
 export interface IArticleData {
   id: number
   status: string
@@ -19,11 +21,19 @@ export interface IArticleData {
 }
 
 export interface IUser {
-  user_id: string;
+  id: number;
   email: string;
   first_name: string;
   last_name: string;
-  is_active: boolean;
-  is_superuser: boolean;
-  created_ts: Date;
+  status: UserStatus;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface IRole {
+  id: number,
+  name: string,
+  description: string,
+  created_at: Date;
+  updated_at: Date;
 }

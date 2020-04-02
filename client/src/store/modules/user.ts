@@ -48,9 +48,15 @@ class User extends VuexModule implements IUserState {
   public async Login(userInfo: { username: string, password: string }) {
     let { username, password } = userInfo;
     username = username.trim();
-    const { data } = await login({ username, password });
-    setToken(data.accessToken);
-    this.SET_TOKEN(data.accessToken);
+
+    const params = new URLSearchParams();
+    params.append('username', username);
+    params.append('password', password);
+    const { data } = await login(params);
+    const token = data.access_token;
+    console.log(token);
+    setToken(token);
+    this.SET_TOKEN(token);
   }
 
   @Action

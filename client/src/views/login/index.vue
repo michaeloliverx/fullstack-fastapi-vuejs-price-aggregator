@@ -87,27 +87,27 @@ export default class extends Vue {
     } else {
       callback();
     }
-  }
+  };
   private validatePassword = (rule: any, value: string, callback: Function) => {
     if (value.length < 6) {
       callback(new Error('The password can not be less than 6 digits'));
     } else {
       callback();
     }
-  }
+  };
   private loginForm = {
-    username: 'admin',
-    password: '111111'
-  }
+    username: 'mo175@live.com',
+    password: 'Qwerty123!'
+  };
   private loginRules = {
-    username: [{ validator: this.validateUsername, trigger: 'blur' }],
+    username: [{ trigger: 'blur' }],
     password: [{ validator: this.validatePassword, trigger: 'blur' }]
-  }
-  private passwordType = 'password'
-  private loading = false
-  private showDialog = false
-  private redirect?: string
-  private otherQuery: Dictionary<string> = {}
+  };
+  private passwordType = 'password';
+  private loading = false;
+  private showDialog = false;
+  private redirect?: string;
+  private otherQuery: Dictionary<string> = {};
 
   @Watch('$route', { immediate: true })
   private onRouteChange(route: Route) {
