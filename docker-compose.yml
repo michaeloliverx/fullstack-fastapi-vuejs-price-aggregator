@@ -1,0 +1,54 @@
+version: "3.7"
+
+volumes:
+  postgres_data: {}
+
+services:
+  backend: &backend
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./server:/app
+    env_file:
+      - docker/server.env
+      - docker/postgres.env
+    depends_on:
+      - postgres
+      - mailhog
+    ports:
+      - "8000:8000"
+
+  test:
+    <<: *backend
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: testing
+    ports: []
+
+  postgres:
+    image: postgres:12.2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - docker/postgres.env
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "pgadmin"
+      PGADMIN_DEFAULT_PASSWORD: "pgadmin"
+    ports:
+      - "5050:80"
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "8025:8025"

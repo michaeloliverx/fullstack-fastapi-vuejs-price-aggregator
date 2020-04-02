@@ -1,0 +1,5 @@
+roles:
+  - name: admin
+    description: Permits administrator privileges.
+  - name: user
+    description: Normal user privileges.

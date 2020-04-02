@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "testing"
+version = "0.1.0"
+description = ""
+authors = ["Michael Oliver <mo175@live.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.1"
+fastapi = {version = "^0.53.2", extras = ["all"]}
+passlib = {version = "^1.7.2", extras = ["bcrypt"]}
+pyjwt = {version = "^1.7.1", extras = ["crypto"]}
+yagmail = "^0.11"
+alembic = "^1.4.2"
+sqlalchemy = "^1.3.15"
+sqlalchemy-utils = "^0.36.3"
+click-spinner = "^0.1.8"
+tabulate = "^0.8.6"
+psycopg2-binary = "^2.8.4"
+sqlalchemy-filters = "^0.10.0"
+orjson = "^2.6.1"
+typer = "^0.1.1"
+factory-boy = "^2.12.0"
+pytz = "^2019.3"
+ipython = "^7.13.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.4.1"
+coverage = { version = "^5.0.4", extras = ["toml"]}
+isort = { version = "^4.3.21", extras = ["pyproject"]}
+black = "^19.10b0"
+
+[tool.black]
+# https://github.com/psf/black
+line-length = 88
+target_version = ['py38']
+exclude = '''
+(
+  /(
+    \.git
+    | \.mypy_cache
+    | \.pytest_cache
+    | htmlcov
+    | venv
+    | .venv
+  )/
+)
+'''
+
+[tool.isort]
+# https://github.com/timothycrosley/isort
+# https://github.com/timothycrosley/isort/wiki/isort-Settings
+line_length = 88
+indent = '    '
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+known_third_party = ["alembic"]
+
+[tool.coverage]
+# https://github.com/nedbat/coveragepy
+    [tool.coverage.run]
+    source = ["app"]
+    branch = true
+    omit = ['']
+
+    [tool.coverage.report]
+    exclude_lines = [
+        "pragma: no cover",
+        "raise NotImplementedError"
+    ]
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
