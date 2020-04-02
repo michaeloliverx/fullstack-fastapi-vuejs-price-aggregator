@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { isExternal } from '@/utils/validate'
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { isExternal } from '@/utils/validate';
 
 @Component({
   name: 'SidebarItemLink'

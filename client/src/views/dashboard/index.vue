@@ -13,19 +13,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { UserModule } from '@/store/modules/user'
+import { Component, Vue } from 'vue-property-decorator';
+import { UserModule } from '@/store/modules/user';
 
 @Component({
   name: 'Dashboard'
 })
 export default class extends Vue {
   get name() {
-    return UserModule.name
+    return UserModule.name;
   }
 
   get roles() {
-    return UserModule.roles
+    return UserModule.roles;
   }
 }
 </script>

@@ -68,9 +68,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { getArticles } from '@/api/articles'
-import { IArticleData } from '@/api/types'
+import { Component, Vue } from 'vue-property-decorator';
+import { getArticles } from '@/api/articles';
+import { IArticleData } from '@/api/types';
 
 @Component({
   name: 'Table',
@@ -80,11 +80,11 @@ import { IArticleData } from '@/api/types'
         published: 'success',
         draft: 'gray',
         deleted: 'danger'
-      }
-      return statusMap[status]
+      };
+      return statusMap[status];
     },
     parseTime: (timestamp: string) => {
-      return new Date(timestamp).toISOString()
+      return new Date(timestamp).toISOString();
     }
   }
 })
@@ -97,17 +97,17 @@ export default class extends Vue {
   }
 
   created() {
-    this.getList()
+    this.getList();
   }
 
   private async getList() {
-    this.listLoading = true
-    const { data } = await getArticles(this.listQuery)
-    this.list = data.items
+    this.listLoading = true;
+    const { data } = await getArticles(this.listQuery);
+    this.list = data.items;
     // Just to simulate the time of the request
     setTimeout(() => {
-      this.listLoading = false
-    }, 0.5 * 1000)
+      this.listLoading = false;
+    }, 0.5 * 1000);
   }
 }
 </script>

@@ -21,10 +21,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { AppModule } from '@/store/modules/app'
-import SidebarItem from './SidebarItem.vue'
-import variables from '@/styles/_variables.scss'
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { AppModule } from '@/store/modules/app';
+import SidebarItem from './SidebarItem.vue';
+import variables from '@/styles/_variables.scss';
 
 @Component({
   name: 'SideBar',
@@ -34,19 +34,19 @@ import variables from '@/styles/_variables.scss'
 })
 export default class extends Vue {
   get sidebar() {
-    return AppModule.sidebar
+    return AppModule.sidebar;
   }
 
   get routes() {
-    return (this.$router as any).options.routes
+    return (this.$router as any).options.routes;
   }
 
   get variables() {
-    return variables
+    return variables;
   }
 
   get isCollapse() {
-    return !this.sidebar.opened
+    return !this.sidebar.opened;
   }
 }
 </script>

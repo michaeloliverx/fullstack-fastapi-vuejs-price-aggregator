@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({
   name: 'Hamburger'
@@ -21,7 +21,7 @@ export default class extends Vue {
   @Prop({ default: false }) private isActive!: boolean
 
   private toggleClick() {
-    this.$emit('toggleClick')
+    this.$emit('toggleClick');
   }
 }
 </script>

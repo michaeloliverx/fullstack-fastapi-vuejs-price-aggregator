@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 export interface IArticleData {
   id: number
   status: string
@@ -14,4 +16,14 @@ export interface IArticleData {
   reviewer: string
   type: string
   pageviews: number
+}
+
+export interface IUser {
+  user_id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_active: boolean;
+  is_superuser: boolean;
+  created_ts: Date;
 }

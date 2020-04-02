@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
-import { Tree as ElTree } from 'element-ui'
-import { TreeData } from 'element-ui/types/tree'
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Tree as ElTree } from 'element-ui';
+import { TreeData } from 'element-ui/types/tree';
 
 @Component({
   name: 'Tree'
@@ -68,12 +68,12 @@ export default class extends Vue {
 
   @Watch('filterText')
   private onFilterTextChange(value: string) {
-    (this.$refs.tree2 as ElTree).filter(value)
+    (this.$refs.tree2 as ElTree).filter(value);
   }
 
   private filterNode(value: string, data: TreeData) {
-    if (!value) { return true }
-    return data.label && data.label.indexOf(value) !== -1
+    if (!value) { return true; }
+    return data.label && data.label.indexOf(value) !== -1;
   }
 }
 </script>

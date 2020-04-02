@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
   name: 'Form'
@@ -116,14 +116,14 @@ export default class extends Vue {
   };
 
   private onSubmit() {
-    this.$message('submit!')
+    this.$message('submit!');
   }
 
   private onCancel() {
     this.$message({
       message: 'cancel!',
       type: 'warning'
-    })
+    });
   }
 }
 </script>
