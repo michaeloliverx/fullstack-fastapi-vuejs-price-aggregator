@@ -1,16 +1,16 @@
 import request from '@/utils/request';
 
-export const getUserInfo = (data: any) =>
+export const getUserMe = (data: any) =>
   request({
     url: '/users/me',
-    method: 'post',
+    method: 'get',
     data
   });
 
 export const getUserRoles = (data: any) =>
   request({
     url: '/users/me/roles',
-    method: 'post',
+    method: 'get',
     data
   });
 
@@ -23,6 +23,6 @@ export const login = (data: any) =>
 
 export const logout = () =>
   request({
-    url: '/users/logout',
+    url: '/auth/logout',
     method: 'post'
   });

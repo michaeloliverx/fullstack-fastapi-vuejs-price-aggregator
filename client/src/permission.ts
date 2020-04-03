@@ -24,7 +24,8 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
       if (UserModule.roles.length === 0) {
         try {
           // Get user info, including roles
-          await UserModule.GetUserInfo();
+          await UserModule.GetUserMe();
+          await UserModule.GetUserRoles();
           // Set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true });
         } catch (err) {
