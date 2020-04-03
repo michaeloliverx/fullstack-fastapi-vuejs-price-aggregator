@@ -78,7 +78,3 @@ def authenticate(session: Session, email: str, password: str) -> Optional[User]:
     if not user or not verify_password(password, user.hashed_password):
         return None
     return user
-
-
-def is_active(user: User) -> bool:
-    return user.status == UserStatus.active

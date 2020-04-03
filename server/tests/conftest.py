@@ -8,20 +8,18 @@ os.environ["USERS_OPEN_REGISTRATION"] = "true"
 import pytest
 from alembic import command as alembic_cmd
 from alembic.config import Config as AlembicConfig
+from fastapi.testclient import TestClient
 from sqlalchemy import orm
 from sqlalchemy_utils import create_database, database_exists, drop_database
-from fastapi.testclient import TestClient
 
 from app.db.session import engine, get_db
-
-from app.enums.roleenums import RoleName
-from app.main import app
-from app.settings import settings
-from app.models import usermodels
 from app.enums.userenums import UserStatus
+from app.main import app
+from app.models import usermodels
+from app.settings import settings
 
 from . import factories
-from .common import ScopedSession, USER_PASSWORD, override_get_db
+from .common import USER_PASSWORD, ScopedSession, override_get_db
 
 assert settings.FASTAPI_ENV == "testing"
 
@@ -89,7 +87,10 @@ def admin_client(client: TestClient, session: orm.Session):
     Fixture provides a client with admin role headers.
     """
 
+    # Creating new active user
     user: usermodels.User = factories.UserFactory(status=UserStatus.active)
+    # Adding "admin" role to user
+    user.roles = [factories.RoleFactory(name="admin")]
 
     session.add(user)
     # Don't know why but commit must be called twice??
@@ -99,9 +100,9 @@ def admin_client(client: TestClient, session: orm.Session):
     url = "api/v1/auth/login"
     headers = {"content-type": "application/x-www-form-urlencoded"}
     data = {
-            "username": user.email,
-            "password": USER_PASSWORD,
-        }
+        "username": user.email,
+        "password": USER_PASSWORD,
+    }
 
     resp = client.post(url=url, headers=headers, data=data)
     assert resp.status_code == 200
@@ -136,7 +137,5 @@ def role():
 
 @pytest.fixture
 def roles():
-    return [
-        factories.RoleFactory(name=RoleName.admin),
-        factories.RoleFactory(name=RoleName.user),
-    ]
+    role_names = ["admin", "user"]
+    return [factories.RoleFactory(name=i) for i in role_names]

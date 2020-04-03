@@ -6,7 +6,6 @@ https://factoryboy.readthedocs.io/en/latest/orms.html#factory.alchemy.SQLAlchemy
 
 """
 
-from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import Column, ForeignKey, Integer, String

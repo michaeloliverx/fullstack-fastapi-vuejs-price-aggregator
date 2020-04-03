@@ -5,7 +5,7 @@ from factory.faker import Faker
 from factory.fuzzy import FuzzyChoice, FuzzyDateTime, FuzzyText
 from pytz import UTC
 
-from app.enums import roleenums, userenums
+from app.enums import userenums
 from app.models import rolemodels, usermodels
 from app.service.passwordservice import get_password_hash
 
@@ -46,7 +46,7 @@ class UserFactory(TimeStampBaseFactory, BaseFactory):
 class RoleFactory(TimeStampBaseFactory, BaseFactory):
     """Role factory."""
 
-    name = FuzzyChoice(roleenums.RoleName)
+    name = FuzzyChoice(["admin", "user"])
     description = FuzzyText()
 
     class Meta:

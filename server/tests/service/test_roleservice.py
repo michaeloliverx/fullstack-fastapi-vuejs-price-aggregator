@@ -2,16 +2,14 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from app.enums.roleenums import RoleName
-from app.messages.rolemsgs import ROLE_DESCRIPTIONS
 from app.models import rolemodels
 from app.service import roleservice
 
 
 def test_create(session: Session):
 
-    name = RoleName.admin
-    description = ROLE_DESCRIPTIONS[RoleName.admin]
+    name = "admin"
+    description = "admin desc"
 
     role_in = rolemodels.RoleCreate(name=name, description=description)
 

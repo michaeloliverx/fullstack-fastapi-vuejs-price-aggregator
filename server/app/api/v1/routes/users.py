@@ -7,6 +7,8 @@ from app.db.session import get_db
 from app.models import rolemodels, usermodels
 from app.service import userservice
 
+from ..dependencies.auth import get_current_active_user
+
 router = APIRouter()
 
 
@@ -31,6 +33,17 @@ def create_new_user(
             detail="Email address already exists",
         )
     return userservice.create(session=db_session, model=user_in)
+
+
+@router.get(
+    "/me",
+    response_model=usermodels.UserRead,
+)
+def read_current_user(
+    current_user: usermodels.User = Depends(get_current_active_user)
+):
+    """Read the currently logged in user."""
+    return current_user
 
 
 @router.get(
@@ -91,6 +104,15 @@ def delete_user(
         )
 
     return userservice.delete(session=db_session, id_=user_id)
+
+
+@router.get(
+    "/me/roles", response_model=List[rolemodels.RoleRead],
+)
+def read_current_user_roles(
+    current_user: usermodels.User = Depends(get_current_active_user)
+):
+    return current_user.roles
 
 
 @router.get(

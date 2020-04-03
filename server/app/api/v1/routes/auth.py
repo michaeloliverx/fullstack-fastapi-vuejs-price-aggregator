@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.post("/login", response_model=tokenmodels.TokenResponse)
-def login_access_token(
+def login(
     *,
     db_session: orm.Session = Depends(get_db),
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -27,7 +27,7 @@ def login_access_token(
     )
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=form_data.__dict__,
+            status_code=status.HTTP_400_BAD_REQUEST, detail="REPLACE ME",
         )
     elif not user.status == userenums.UserStatus.active:
         raise HTTPException(
@@ -44,6 +44,11 @@ def login_access_token(
         "access_token": token,
         "token_type": "bearer",
     }
+
+
+@router.post("/logout")
+def logout():
+    return {"logout-status": "successful"}
 
 
 @router.post("/login/test-token", response_model=usermodels.UserRead)
