@@ -65,5 +65,6 @@ class RoleChecker:
         return current_user
 
 
+# Define roles here
 admin_role = RoleChecker("admin")
 user_role = RoleChecker("user")
