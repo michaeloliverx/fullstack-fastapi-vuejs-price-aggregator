@@ -1,3 +1,5 @@
+import pytest
+
 from typing import List
 
 from sqlalchemy.orm import Session
@@ -7,6 +9,8 @@ from app.service import roleservice
 
 
 def test_create(session: Session):
+
+    pytest.set_trace()
 
     name = "admin"
     description = "admin desc"
