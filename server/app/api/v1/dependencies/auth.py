@@ -11,6 +11,10 @@ from app.service import tokenservice, userservice
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
+ADMIN_ROLE = "admin"
+USER_ROLE = "user"
+
+
 def get_current_user(
     db_session: orm.Session = Depends(get_db), token: str = Security(reusable_oauth2)
 ) -> usermodels.User:
@@ -29,7 +33,7 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect JWT audience."
         )
 
-    user = userservice.get(session=db_session, id_=token_data.user_id)
+    user = userservice.get(db_session=db_session, id_=token_data.user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="EMAIL_NOT_FOUND"
@@ -66,5 +70,5 @@ class RoleChecker:
 
 
 # Define roles here
-admin_role = RoleChecker("admin")
-user_role = RoleChecker("user")
+verify_user_role = RoleChecker(USER_ROLE)
+verify_admin_role = RoleChecker(ADMIN_ROLE)

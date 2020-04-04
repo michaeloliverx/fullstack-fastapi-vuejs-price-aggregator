@@ -15,4 +15,4 @@ router = APIRouter()
 )
 def read_multiple(*, db_session: Session = Depends(get_db)):
     """Read multiple roles."""
-    return roleservice.get_multiple(session=db_session)
+    return roleservice.get_multiple(db_session=db_session)

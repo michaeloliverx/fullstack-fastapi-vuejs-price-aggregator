@@ -8,7 +8,7 @@ from app.models import tokenmodels, usermodels
 from app.service import tokenservice, userservice
 from app.settings import settings
 
-from ..dependencies.auth import admin_role, get_current_user
+from ..dependencies.auth import get_current_user, verify_admin_role
 
 router = APIRouter()
 
@@ -23,12 +23,13 @@ def login(
     OAuth2 compatible token login, get an access token for future requests.
     """
     user = userservice.authenticate(
-        session=db_session, email=form_data.username, password=form_data.password
+        db_session=db_session, email=form_data.username, password=form_data.password
     )
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="REPLACE ME",
         )
+
     elif not user.status == userenums.UserStatus.active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="USER_INACTIVE"
@@ -60,5 +61,5 @@ def test_token(current_user: usermodels.User = Depends(get_current_user)):
 
 
 @router.post("/login/test-admin-role", response_model=usermodels.UserRead)
-def test_role(current_user: usermodels.User = Depends(admin_role)):
+def test_role(current_user: usermodels.User = Depends(verify_admin_role)):
     return current_user

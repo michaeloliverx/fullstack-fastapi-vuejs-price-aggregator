@@ -1,4 +1,5 @@
 [tool.poetry]
+# https://github.com/python-poetry/poetry
 name = "testing"
 version = "0.1.0"
 description = ""

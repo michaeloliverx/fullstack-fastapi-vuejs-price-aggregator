@@ -1,23 +1,21 @@
-import pytest
-
 from typing import List
 
+import pytest
 from sqlalchemy.orm import Session
 
 from app.models import rolemodels
 from app.service import roleservice
+from tests import factories
 
 
-def test_create(session: Session):
-
-    pytest.set_trace()
+def test_create(db_session: Session):
 
     name = "admin"
     description = "admin desc"
 
     role_in = rolemodels.RoleCreate(name=name, description=description)
 
-    created = roleservice.create(session=session, role_in=role_in)
+    created = roleservice.create(db_session=db_session, role_in=role_in)
     assert created
     assert isinstance(created, rolemodels.Role)
     for attr in [
@@ -30,7 +28,7 @@ def test_create(session: Session):
         assert hasattr(created, attr)
 
 
-def test_create_multiple(session: Session):
+def test_create_multiple(db_session: Session):
     roles_data = [
         {"name": "admin", "description": "Administrator"},
         {"name": "user", "description": "User"},
@@ -39,25 +37,31 @@ def test_create_multiple(session: Session):
         rolemodels.RoleCreate(name=role["name"], description=role["description"])
         for role in roles_data
     ]
-    created_roles = roleservice.create_multiple(session=session, roles_in=roles_in)
+    created_roles = roleservice.create_multiple(
+        db_session=db_session, roles_in=roles_in
+    )
     assert len(created_roles) == len(roles_in)
 
 
-def test_get(session: Session, role: rolemodels.Role):
-    read = roleservice.get(session=session, id_=role.id)
+def test_get(db_session: Session):
+    role = factories.RoleFactory(name="admin")
+    read = roleservice.get(db_session=db_session, id_=role.id)
     assert read.id == role.id
 
 
-def test_get_by_name(session: Session, role: rolemodels.Role):
-    read = roleservice.get_by_name(session=session, name=role.name)
+def test_get_by_name(db_session: Session):
+    role = factories.RoleFactory(name="user")
+    read = roleservice.get_by_name(db_session=db_session, name=role.name)
     assert read.id == role.id
 
 
-def test_get_multiple(session: Session, roles: List[rolemodels.Role]):
-    read = roleservice.get_multiple(session=session)
+def test_get_multiple(db_session: Session):
+    roles = [factories.RoleFactory(name="admin"), factories.RoleFactory(name="user")]
+    read = roleservice.get_multiple(db_session=db_session)
     assert len(read) > 1
 
 
-def test_delete(session: Session, role: rolemodels.Role):
-    roleservice.delete(session=session, id_=role.id)
-    assert not roleservice.get(session=session, id_=role.id)
+def test_delete(db_session: Session):
+    role = factories.RoleFactory(name="admin")
+    roleservice.delete(db_session=db_session, id_=role.id)
+    assert not roleservice.get(db_session=db_session, id_=role.id)
