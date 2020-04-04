@@ -13,7 +13,9 @@ router = APIRouter()
 
 
 @router.get(
-    "/me", response_model=usermodels.UserRead,
+    "/me",
+    response_model=usermodels.UserRead,
+    dependencies=[Depends(get_current_active_user)],
 )
 def read_current_user(current_user: usermodels.User = Depends(get_current_active_user)):
     """Read the currently logged in user."""

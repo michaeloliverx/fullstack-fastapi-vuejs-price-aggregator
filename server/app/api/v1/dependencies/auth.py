@@ -55,16 +55,19 @@ def get_current_active_user(current_user: usermodels.User = Security(get_current
 
 
 class RoleChecker:
-    def __init__(self, role: str):
+    def __init__(self, role: str) -> None:
         self.role = role
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}: {self.role}"
 
     def __call__(
         self, current_user: usermodels.User = Security(get_current_active_user)
-    ):
-        if self.role not in [role.name for role in current_user.roles]:
+    ) -> usermodels.User:
+        if self.role not in current_user.role_names:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="The user does not have enough privilege's to access this resource.",
+                detail="The current user does not have enough privilege's to access this resource.",
             )
         return current_user
 

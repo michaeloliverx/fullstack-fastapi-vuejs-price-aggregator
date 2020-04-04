@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.enums.userenums import UserStatus
-from app.models import rolemodels, usermodels
+from app.models import usermodels
 from app.service import userservice
 from app.service.passwordservice import verify_password
 from tests import common, factories
@@ -25,7 +25,7 @@ def test_create(db_session: Session):
         status=status,
     )
 
-    created = userservice.create(db_session=db_session, model=user_in)
+    created = userservice.create(db_session=db_session, user_in=user_in)
     assert created
     assert isinstance(created, usermodels.User)
     assert user_in.email == created.email
@@ -62,9 +62,11 @@ def test_create_with_role(db_session: Session):
     )
 
     created_with_role = userservice.create_with_role(
-        db_session=db_session, model=user_in, role=role
+        db_session=db_session, user_in=user_in, role=role
     )
     assert created_with_role.roles[0].id == role.id
+
+    pytest.set_trace()
 
 
 def test_get(db_session: Session):
@@ -95,7 +97,7 @@ def test_get_multiple(db_session: Session):
 )
 def test_update(db_session: Session, update_model: usermodels.UserUpdate):
     user: usermodels.User = factories.UserFactory()
-    updated = userservice.update(db_session=db_session, db_obj=user, model=update_model)
+    updated = userservice.update(db_session=db_session, user=user, user_in=update_model)
     for field in update_model.__fields_set__:
         if field == "password":
             assert verify_password(update_model.password, updated.hashed_password)

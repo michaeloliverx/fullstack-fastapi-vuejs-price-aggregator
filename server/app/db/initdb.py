@@ -12,16 +12,16 @@ with open(INITDB_PATH) as file:
     config = yaml.safe_load(file)
 
 
-def initdb(session: orm.Session):
-    init_roles(session=session)
+def initdb(db_session: orm.Session):
+    init_roles(db_session=db_session)
 
 
-def init_roles(session: orm.Session):
+def init_roles(db_session: orm.Session):
     roles_in = [
         rolemodels.RoleCreate(name=role["name"], description=role["description"])
         for role in config["roles"]
     ]
-    roleservice.create_multiple(session=session, roles_in=roles_in)
+    roleservice.create_multiple(db_session=db_session, roles_in=roles_in)
 
 
 def setup_guids_postgresql(engine: engine.Engine) -> None:  # pragma: no cover

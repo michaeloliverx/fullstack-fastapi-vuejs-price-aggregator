@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import EmailStr, validator
 from sqlalchemy import Column, String
@@ -23,6 +23,10 @@ class User(SQLAlchemyTS, SQLAlchemyIntPK, SQLAlchemyBase):
 
     # Relationships
     roles = relationship("Role", secondary="user_roles")
+
+    @property
+    def role_names(self) -> List[str]:
+        return [role.name for role in self.roles]
 
 
 # Pydantic models
