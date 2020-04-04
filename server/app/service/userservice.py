@@ -21,13 +21,13 @@ def get_multiple(
     return db_session.query(User).offset(offset).limit(limit).all()
 
 
-def create(db_session: Session, model: UserCreate) -> User:
+def create(db_session: Session, user_in: UserCreate) -> User:
     db_obj = User(
-        email=model.email,
-        hashed_password=get_password_hash(model.password),
-        first_name=model.first_name,
-        last_name=model.last_name,
-        status=model.status,
+        email=user_in.email,
+        hashed_password=get_password_hash(user_in.password),
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        status=user_in.status,
     )
     db_session.add(db_obj)
     db_session.commit()
@@ -35,14 +35,14 @@ def create(db_session: Session, model: UserCreate) -> User:
 
 
 def create_with_role(
-    db_session: Session, model: UserCreate, role: rolemodels.Role
+    db_session: Session, user_in: UserCreate, role: rolemodels.Role
 ) -> User:
     db_obj = User(
-        email=model.email,
-        hashed_password=get_password_hash(model.password),
-        first_name=model.first_name,
-        last_name=model.last_name,
-        status=model.status,
+        email=user_in.email,
+        hashed_password=get_password_hash(user_in.password),
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        status=user_in.status,
     )
     db_obj.roles = [role]
     db_session.add(db_obj)
@@ -51,22 +51,22 @@ def create_with_role(
 
 
 def update(
-    db_session: Session, db_obj: User, model: Union[UserUpdate, UserUpdateMe]
+    db_session: Session, user: User, user_in: Union[UserUpdate, UserUpdateMe]
 ) -> User:
 
-    update_data = model.dict(exclude_defaults=True, exclude_unset=True)
+    update_data = user_in.dict(exclude_defaults=True, exclude_unset=True)
     if "password" in update_data:
         plainpass = update_data.pop("password")
         hashedpass = get_password_hash(plainpass)
         update_data["hashed_password"] = hashedpass
 
     for field in update_data:
-        if hasattr(db_obj, field):
-            setattr(db_obj, field, update_data[field])
+        if hasattr(user, field):
+            setattr(user, field, update_data[field])
 
-    db_session.add(db_obj)
+    db_session.add(user)
     db_session.commit()
-    return db_obj
+    return user
 
 
 def delete(db_session: Session, id_: int):

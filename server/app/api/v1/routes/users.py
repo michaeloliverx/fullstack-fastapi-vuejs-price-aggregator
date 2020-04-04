@@ -1,13 +1,13 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models import rolemodels, usermodels
 from app.service import userservice
 
-from ..dependencies.auth import get_current_active_user
+from ..dependencies.or_404 import get_user_or_404
 
 router = APIRouter()
 
@@ -15,108 +15,76 @@ router = APIRouter()
 @router.get(
     "/", response_model=List[usermodels.UserRead],
 )
-def read_multiple(*, db_session: Session = Depends(get_db)):
-    """Read multiple users."""
+def get_users(*, db_session: Session = Depends(get_db)):
+    """
+    Retrieve a list of users.
+    """
     return userservice.get_multiple(db_session=db_session)
 
 
 @router.post(
     "/", status_code=status.HTTP_201_CREATED, response_model=usermodels.UserRead,
 )
-def create_new_user(
+def create_user(
     *, db_session: Session = Depends(get_db), user_in: usermodels.UserCreate
 ):
-    """Create a new user."""
+    """
+    Create a new user.
+    """
     if userservice.get_by_email(db_session=db_session, email=user_in.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email address already exists",
         )
-    return userservice.create(db_session=db_session, model=user_in)
+    return userservice.create(db_session=db_session, user_in=user_in)
 
 
 @router.get(
-    "/me", response_model=usermodels.UserRead,
+    "/{id}", response_model=usermodels.UserRead,
 )
-def read_current_user(current_user: usermodels.User = Depends(get_current_active_user)):
-    """Read the currently logged in user."""
-    return current_user
-
-
-@router.get(
-    "/{id}",
-    response_model=usermodels.UserRead,
-    # dependencies=[Depends(get_current_active_superuser)],
-)
-def read_single_user(
-    db_session: Session = Depends(get_db), user_id: int = Path(..., alias="id")
-):
-    """Read a single user."""
-    user = userservice.get(db_session=db_session, id_=user_id)
-    print(user)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="EMAIL_NOT_FOUND",
-        )
+def get_user(user: usermodels.User = Depends(get_user_or_404),):
+    """
+    Retrieve details about a specific user.
+    """
     return user
 
 
 @router.put(
-    "/{id}",
-    response_model=usermodels.UserRead,
-    # dependencies=[Depends(get_current_active_superuser)],
+    "/{id}", response_model=usermodels.UserRead,
 )
 def update_user(
     *,
     db_session: Session = Depends(get_db),
     user_in: usermodels.UserUpdate,
-    user_id: int = Path(..., alias="id"),
+    user: usermodels.User = Depends(get_user_or_404),
 ):
-    """Update an individual user."""
+    """
+    Update an individual user.
+    """
 
-    user = userservice.get(db_session=db_session, id_=user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="USER_NOT_FOUND",
-        )
-
-    return userservice.update(db_session=db_session, db_obj=user, model=user_in)
+    return userservice.update(db_session=db_session, user=user, user_in=user_in)
 
 
 @router.delete(
-    "/{id}",
-    response_model=usermodels.UserRead,
-    # dependencies=[Depends(get_current_active_superuser)],
+    "/{id}", response_model=usermodels.UserRead,
 )
 def delete_user(
-    *, db_session: Session = Depends(get_db), user_id: int = Path(..., alias="id")
+    *,
+    db_session: Session = Depends(get_db),
+    user: usermodels.User = Depends(get_user_or_404),
 ):
-    """Delete an individual user."""
+    """
+    Delete an individual user.
+    """
 
-    user = userservice.get(db_session=db_session, id_=user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="USER_NOT_FOUND",
-        )
-
-    return userservice.delete(db_session=db_session, id_=user_id)
-
-
-@router.get(
-    "/me/roles", response_model=List[rolemodels.RoleRead],
-)
-def read_current_user_roles(
-    current_user: usermodels.User = Depends(get_current_active_user),
-):
-    return current_user.roles
+    return userservice.delete(db_session=db_session, id_=user.id)
 
 
 @router.get(
     "/{id}/roles", response_model=List[rolemodels.RoleRead],
 )
-def read_user_roles(
-    *, db_session: Session = Depends(get_db), user_id: int = Path(..., alias="id")
-):
-    user = userservice.get(db_session=db_session, id_=user_id)
+def read_user_roles(user: usermodels.User = Depends(get_user_or_404),):
+    """
+    Retrieve a list of roles assigned to an individual user.
+    """
     return user.roles

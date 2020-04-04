@@ -70,5 +70,5 @@ class RoleChecker:
 
 
 # Define roles here
-verify_user_role = RoleChecker(USER_ROLE)
-verify_admin_role = RoleChecker(ADMIN_ROLE)
+user_role = RoleChecker(USER_ROLE)
+admin_role = RoleChecker(ADMIN_ROLE)

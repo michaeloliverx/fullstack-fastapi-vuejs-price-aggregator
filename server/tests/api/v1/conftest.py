@@ -17,9 +17,7 @@ def user_with_admin_role():
 
 @pytest.fixture(scope="function")
 def admin_client(
-    client: TestClient,
-    db_session: orm.Session,
-    user_with_admin_role: usermodels.User
+    client: TestClient, db_session: orm.Session, user_with_admin_role: usermodels.User
 ):
     """
     Fixture provides a client with admin role headers.

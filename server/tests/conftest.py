@@ -8,14 +8,14 @@ os.environ["USERS_OPEN_REGISTRATION"] = "true"
 import contextlib
 
 import pytest
-from fastapi.testclient import TestClient
 from alembic import command as alembic_cmd
 from alembic.config import Config as AlembicConfig
+from fastapi.testclient import TestClient
 from sqlalchemy import orm
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from app.main import app
 from app.db.session import engine
+from app.main import app
 from app.models.meta.sqlalchemybase import SQLAlchemyBase
 from app.settings import settings
 

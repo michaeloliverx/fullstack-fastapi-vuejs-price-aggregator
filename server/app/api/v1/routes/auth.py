@@ -8,7 +8,7 @@ from app.models import tokenmodels, usermodels
 from app.service import tokenservice, userservice
 from app.settings import settings
 
-from ..dependencies.auth import get_current_user, verify_admin_role
+from ..dependencies.auth import get_current_user
 
 router = APIRouter()
 
@@ -57,9 +57,4 @@ def test_token(current_user: usermodels.User = Depends(get_current_user)):
     """
     Test access token
     """
-    return current_user
-
-
-@router.post("/login/test-admin-role", response_model=usermodels.UserRead)
-def test_role(current_user: usermodels.User = Depends(verify_admin_role)):
     return current_user
