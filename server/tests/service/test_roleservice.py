@@ -61,6 +61,14 @@ def test_get_multiple(db_session: Session):
     assert len(read) > 1
 
 
+def test_update(db_session: Session):
+    role = factories.RoleFactory(name="user")
+    role_in = rolemodels.RoleUpdate(description="More descriptive description.")
+    updated = roleservice.update(db_session=db_session, role=role, role_in=role_in)
+    for field in role_in.__fields_set__:
+        assert getattr(updated, field) == getattr(role_in, field)
+
+
 def test_delete(db_session: Session):
     role = factories.RoleFactory(name="admin")
     roleservice.delete(db_session=db_session, id_=role.id)
