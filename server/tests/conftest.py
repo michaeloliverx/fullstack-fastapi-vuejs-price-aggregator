@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import orm
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from app.db.session import engine
+from app.db.session import engine, get_db
 from app.main import app
 from app.models.meta.sqlalchemybase import SQLAlchemyBase
 from app.settings import settings
@@ -56,6 +56,8 @@ def create_test_database():
 def db_session():
     """
     Fixture returns a scoped sqlalchemy session, and after rolls back any changes.
+
+    This fixture can be used for testing CRUD service operations and used to override the "get_db" dependency used in routes.
 
     See:
         https://factoryboy.readthedocs.io/en/latest/orms.html#managing-sessions

@@ -66,8 +66,6 @@ def test_create_with_role(db_session: Session):
     )
     assert created_with_role.roles[0].id == role.id
 
-    pytest.set_trace()
-
 
 def test_get(db_session: Session):
     user: usermodels.User = factories.UserFactory()

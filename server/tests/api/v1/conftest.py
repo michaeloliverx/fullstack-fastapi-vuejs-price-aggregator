@@ -8,19 +8,23 @@ from tests import common, factories
 
 
 @pytest.fixture(scope="function")
-def user_with_admin_role():
-    admin_role = factories.RoleFactory(name="admin")
-    return factories.UserFactory.create(
+def user_with_admin_role(db_session: orm.Session):
+    admin_role = factories.RoleFactory.create(name="admin")
+    user = factories.UserFactory.create(
         status=userenums.UserStatus.active, roles=[admin_role]
     )
+    db_session.commit()
+    return user
 
 
 @pytest.fixture(scope="function")
-def user_with_user_role():
-    admin_role = factories.RoleFactory(name="user")
-    return factories.UserFactory.create(
-        status=userenums.UserStatus.active, roles=[admin_role]
+def user_with_user_role(db_session: orm.Session):
+    user_role = factories.RoleFactory(name="user")
+    user = factories.UserFactory.create(
+        status=userenums.UserStatus.active, roles=[user_role]
     )
+    db_session.commit()
+    return user
 
 
 @pytest.fixture(scope="function")
