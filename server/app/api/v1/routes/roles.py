@@ -7,7 +7,7 @@ from app.db.session import get_db
 from app.models import rolemodels
 from app.service import roleservice
 
-from ..dependencies.or_404 import get_role_or_404
+from ..dependencies.or_404 import get_role_by_id_or_404
 
 router = APIRouter()
 
@@ -40,7 +40,7 @@ def create_role(
 
 
 @router.get("/{id}", response_model=rolemodels.RoleRead)
-def read_role(role: rolemodels.Role = Depends(get_role_or_404),):
+def read_role(role: rolemodels.Role = Depends(get_role_by_id_or_404),):
     """
     Retrieve details about a specific role.
     """
@@ -53,7 +53,7 @@ def read_role(role: rolemodels.Role = Depends(get_role_or_404),):
 def update_role(
     *,
     db_session: Session = Depends(get_db),
-    role: rolemodels.Role = Depends(get_role_or_404),
+    role: rolemodels.Role = Depends(get_role_by_id_or_404),
     role_in: rolemodels.RoleUpdate,
 ):
     """
@@ -69,7 +69,7 @@ def update_role(
 def delete_role(
     *,
     db_session: Session = Depends(get_db),
-    role: rolemodels.Role = Depends(get_role_or_404),
+    role: rolemodels.Role = Depends(get_role_by_id_or_404),
 ):
     """
     Delete an individual role.

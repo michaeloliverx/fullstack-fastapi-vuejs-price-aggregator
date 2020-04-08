@@ -23,8 +23,9 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
       // Check whether the user has obtained his permission roles
       if (UserModule.roles.length === 0) {
         try {
-          // Get user info, including roles
+          // Get user data
           await UserModule.GetUserMe();
+          // Get user roles
           await UserModule.GetUserRoles();
           // Set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true });

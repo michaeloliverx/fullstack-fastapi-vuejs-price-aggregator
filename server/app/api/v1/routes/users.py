@@ -1,11 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models import rolemodels, usermodels
-from app.service import userservice
+from app.service import roleservice, userservice
 
 from ..dependencies.or_404 import get_user_or_404
 
@@ -88,3 +88,27 @@ def read_user_roles(user: usermodels.User = Depends(get_user_or_404),):
     Retrieve a list of roles assigned to an individual user.
     """
     return user.roles
+
+
+@router.put(
+    "/{id}/roles", response_model=List[rolemodels.RoleRead],
+)
+def update_user_roles(
+    *,
+    db_session: Session = Depends(get_db),
+    user: usermodels.User = Depends(get_user_or_404),
+    roles_ids: List[int] = Body(...),
+):
+    """
+    Update the assigned roles of an individual user.
+    """
+
+    role_objs = roleservice.get_multiple_by_ids(db_session=db_session, ids_=roles_ids)
+    if len(roles_ids) != len(role_objs):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="One of the specified roles was not found man. I don't know which one yet.",
+        )
+
+    user.roles = [role_objs]
+    db_session.commit()

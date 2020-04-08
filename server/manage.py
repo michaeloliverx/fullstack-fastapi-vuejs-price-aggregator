@@ -1,21 +1,70 @@
 import contextlib
-import os
-import sys
 
+import click_spinner
+import pydantic
 import typer
-from alembic import command as alembic_cmd
-from alembic.config import Config as AlembicConfig
-from sqlalchemy import orm
-from sqlalchemy_utils import create_database, database_exists, drop_database
 from tabulate import tabulate
 
-from app.enums.logenums import LogLevel
+from app.db.initdb import initdb
+from app.enums import logenums, userenums
+from app.main import app
+from app.models import rolemodels, usermodels
+from app.service import roleservice, userservice
 from app.settings import settings
 
 DB_URL = str(settings.POSTGRES_URL)
-alembic_cfg = AlembicConfig("alembic.ini")
 
-cli = typer.Typer(add_completion=False, no_args_is_help=True)
+
+# Utilities
+def create_database_if_not_exists():
+    """
+    Create database if it doesn't already exist.
+    Runs migrations using alembic to bring it up to spec.
+    """
+
+    from sqlalchemy_utils import create_database, database_exists
+    from alembic import command as alembic_cmd
+    from alembic.config import Config as AlembicConfig
+
+    alembic_cfg = AlembicConfig("alembic.ini")
+
+    if database_exists(DB_URL):
+        typer.secho("Database already exists.", fg="red")
+        raise typer.Abort
+    create_database(DB_URL)
+
+    # Run all migrations
+    alembic_cmd.upgrade(config=alembic_cfg, revision="head")
+
+
+@contextlib.contextmanager
+def existing_database():
+    """
+    Context manager that returns a database session that closes.
+    """
+    from sqlalchemy import orm
+    from sqlalchemy_utils import database_exists
+    from app.db.session import SessionLocal
+
+    if not database_exists(DB_URL):
+        typer.secho("Database does not exist.", fg="red")
+        raise typer.Abort
+
+    _db_session: orm.Session = SessionLocal()
+    yield _db_session
+    _db_session.close()
+
+
+@contextlib.contextmanager
+def catch_validation_err():
+    """
+    Catch pydantic validation errors and display pretty message.
+    """
+    try:
+        yield
+    except pydantic.ValidationError as e:
+        typer.secho(str(e), fg=typer.colors.RED, bold=True)
+        raise typer.Abort
 
 
 class Messages:
@@ -26,18 +75,26 @@ class Messages:
     )
 
 
-@cli.command
+# CLI commands
+cli = typer.Typer(add_completion=False, no_args_is_help=True)
+
+
+@cli.command()
 def develop(
     port: int = typer.Option(8000, help="Specify port to use."),
-    loglevel: LogLevel = typer.Option(
-        LogLevel.debug, case_sensitive=False, help="Set specific log level."
+    loglevel: logenums.LogLevel = typer.Option(
+        logenums.LogLevel.debug, case_sensitive=False, help="Set specific log level."
     ),
 ):
-
     """
     Start a development server with reload.
     """
     import uvicorn
+    from sqlalchemy_utils import database_exists
+
+    if not database_exists(DB_URL):
+        typer.secho("No database found, has it been initialised ?", fg="red")
+        raise typer.Abort
 
     uvicorn.run(
         "app.main:app",
@@ -53,7 +110,6 @@ def routes():
     """
     Display application routes and dependencies.
     """
-    from app.main import app
 
     tbl = []
     for route in app.routes:
@@ -77,31 +133,21 @@ def routes():
         + "\n"
     )
 
-    # for r in routes:
-    #     print(r.name)
-
-    # table = []
-    # for r in app.routes:
-    #     if not hasattr(r, "dependencies"):
-    #         continue
-    #     deps = [d.dependency.__name__ for d in r.dependencies]
-    #     if not deps:
-    #         deps = ""
-    #     table.append([r.path, deps, ",".join(r.methods)])
-
 
 @cli.command()
 def shell():
     """
     Starts an interactive shell with app object imported.
     """
+
+    # Local vars defined/imported will be available in shells global scope
     import IPython
     from app.main import app
 
     IPython.embed()
 
 
-@cli.command(name="config")
+@cli.command()
 def config():
     """
     Display application configuration.
@@ -118,84 +164,153 @@ def config():
     )
 
 
-@cli.command(name="initdb")
-def init_database():
+@cli.command()
+def createdb():
     """
-    Initialises an empty database.
+    Creates an empty database.
     """
-
-    from app.db.session import SessionLocal
-    from app.db.initdb import initdb
-
-    if database_exists(DB_URL):
-        typer.secho("Database already exists.", fg="red")
-        raise typer.Abort
-    create_database(DB_URL)
-
-    # Run all migrations
-    alembic_cmd.upgrade(config=alembic_cfg, revision="head")
-
-    with contextlib.closing(SessionLocal()) as db_session:
-        initdb(db_session=db_session)
-
+    create_database_if_not_exists()
     typer.echo(Messages.success)
 
 
-@cli.command(name="dropdb", help="Drop the existing database.")
-def database_drop():
+@cli.command()
+def dropdb():
     """
-    Drops the current database.
+    Drop the existing database.
     """
+    from sqlalchemy_utils import drop_database, database_exists
 
     typer.confirm(Messages.confirm, abort=True)
-
     if not database_exists(DB_URL):
         typer.secho("Database does not exist.", fg="red")
         raise typer.Abort
-
     drop_database(DB_URL)
     typer.echo(Messages.success)
 
 
-@cli.command(help="Create a user with admin role.", no_args_is_help=True)
-def createadminuser(
-    email: str = typer.Argument(...),
-    password: str = typer.Argument(...),
-    first_name: str = typer.Argument("Admin"),
-    last_name: str = typer.Argument("User"),
+@cli.command(no_args_is_help=True)
+def createuser(
+    email: str,
+    password: str,
+    first_name: str,
+    last_name: str,
+    status: userenums.UserStatus = typer.Argument(userenums.UserStatus.active),
+    role: str = typer.Argument(None),
 ):
-    """Add user with admin role to database."""
-    import pydantic
-    from app.models import usermodels
-    from app.service import userservice, roleservice
-    from app.enums.userenums import UserStatus
-    from app.db.session import SessionLocal
+    """
+    Create new user in the database.
 
-    db_session = SessionLocal()
+        EMAIL: Properly formatted email address.
 
-    try:
-        adminuser = usermodels.UserCreate(
+        PASSWORD: Users password.
+
+        FIRST_NAME: Users first name.
+
+        LAST_NAME: Users last name.
+
+        STATUS: Set user account status.
+
+        Optionally assign ROLE to user.
+
+    """
+
+    with catch_validation_err():
+        user_in = usermodels.UserCreate(
             email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
-            status=UserStatus.active,
+            status=status,
         )
-    except pydantic.ValidationError as e:
-        typer.secho(f"Validation error for user: \n {str(e)}", fg="red")
-        raise typer.Abort
 
-    with contextlib.closing(SessionLocal()) as db_session:
-        # TODO: Use object instead of hard coded string
-        admin_role = roleservice.get_by_name(db_session=db_session, name="admin")
-        if not admin_role:
-            typer.secho(
-                '"admin" role does not exist, is database initialised?', fg="red"
+    with existing_database() as db_session:
+        if role:
+            role_obj = roleservice.get_by_name(db_session=db_session, name=role)
+            if not role_obj:
+                typer.secho(
+                    f"Role '{role}' does not exist!", fg=typer.colors.RED, bold=True
+                )
+                raise typer.Abort
+            userservice.create_with_role(
+                db_session=db_session, user_in=user_in, role=role_obj
             )
-            raise typer.Abort
-        userservice.create_with_role(
-            db_session=db_session, user_in=adminuser, role=admin_role
-        )
+        else:
+            userservice.create(db_session=db_session, user_in=user_in)
+    typer.secho(Messages.success)
+
+
+@cli.command(no_args_is_help=True)
+def createrole(
+    name: str = typer.Argument(...), description: str = typer.Argument(None),
+):
+    """
+    Add role to database.
+    """
+
+    with catch_validation_err():
+        role_in = rolemodels.RoleCreate(name=name, description=description)
+
+    with existing_database() as db_session:
+        roleservice.create(db_session=db_session, role_in=role_in)
+    typer.echo(Messages.success)
+
+
+@cli.command()
+def seeddb():
+    """
+    Add fake data to database.
+    """
+    import random
+    import faker
+
+    fake = faker.Faker()
+
+    # TODO: Add progress var from typer
+    with existing_database() as db_session:
+        with click_spinner.spinner():
+            # Create roles:
+            admin_role = roleservice.create(
+                db_session=db_session,
+                role_in=rolemodels.RoleCreate(
+                    name="admin", description="Administrator privileges."
+                ),
+            )
+
+            user_role = roleservice.create(
+                db_session=db_session,
+                role_in=rolemodels.RoleCreate(
+                    name="user", description="Normal user privileges."
+                ),
+            )
+
+            # Create 100 users with user role:
+            for _ in range(100):
+                userservice.create_with_role(
+                    db_session=db_session,
+                    user_in=usermodels.UserCreate(
+                        email=fake.email(),
+                        password="password",
+                        first_name=fake.first_name(),
+                        last_name=fake.last_name(),
+                        status=random.choice(list(userenums.UserStatus)),
+                    ),
+                    role=user_role,
+                )
+
+            # Create users with admin role
+
+            userservice.create_with_role(
+                db_session=db_session,
+                user_in=usermodels.UserCreate(
+                    email="mo175@live.com",
+                    password="password",
+                    first_name=fake.first_name(),
+                    last_name=fake.last_name(),
+                    status=userenums.UserStatus.active,
+                ),
+                role=admin_role,
+            )
+
     typer.echo(Messages.success)
 
 

@@ -6,14 +6,14 @@ import { IUser, IRole } from '@/api/types';
 
 export interface IUserState {
   token: string
-  user: IUser | undefined;
+  user: IUser;
   roles: IRole[] | [];
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
   public token = getToken() || '';
-  public user: IUser | undefined;
+  public user: IUser = {} as IUser;
   public roles: IRole[] = [];
 
   @Mutation

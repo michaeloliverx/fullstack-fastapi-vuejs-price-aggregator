@@ -40,6 +40,14 @@ class UserBase(PydanticBase):
     class Config:
         orm_mode = True
         validate_assignment = True
+        fields = {
+            "id": {"description": "User ID."},
+            "email": {"description": "Properly formatted email address."},
+            "password": {"description": "Password."},
+            "first_name": {"description": "First name."},
+            "last_name": {"description": "Last name."},
+            "status": {"description": "User account status."},
+        }
 
 
 class UserRegister(UserBase):

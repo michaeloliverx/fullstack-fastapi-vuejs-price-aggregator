@@ -2,14 +2,14 @@ import request from '@/utils/request';
 
 export const getUserMe = (data: any) =>
   request({
-    url: '/users/me',
+    url: '/me',
     method: 'get',
     data
   });
 
 export const getUserRoles = (data: any) =>
   request({
-    url: '/users/me/roles',
+    url: '/me/roles',
     method: 'get',
     data
   });

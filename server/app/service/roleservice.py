@@ -19,6 +19,10 @@ def get_multiple(
     return db_session.query(Role).offset(offset).limit(limit).all()
 
 
+def get_multiple_by_ids(db_session: Session, *, ids_: List[int]) -> List[Role]:
+    return db_session.query(Role).filter(Role.id.in_(ids_)).all()
+
+
 def create(db_session: Session, role_in: RoleCreate) -> Role:
     db_obj = Role(name=role_in.name, description=role_in.description)
     db_session.add(db_obj)

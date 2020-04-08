@@ -1,13 +1,15 @@
 <template>
   <div class="dashboard-container">
+    <h2>Welcome, {{ user.first_name }}</h2>
     <div class="dashboard-text">
-      name:{{ name }}
+      <span />
     </div>
+
     <div class="dashboard-text">
-      roles:<span
+      roles: <span
         v-for="role in roles"
         :key="role"
-      >{{ role }}</span>
+      >{{ role.name }}</span>
     </div>
   </div>
 </template>
@@ -20,7 +22,7 @@ import { UserModule } from '@/store/modules/user';
   name: 'Dashboard'
 })
 export default class extends Vue {
-  get name() {
+  get user() {
     return UserModule.user;
   }
 
