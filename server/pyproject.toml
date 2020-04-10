@@ -23,6 +23,9 @@ typer = "^0.1.1"
 factory-boy = "^2.12.0"
 pytz = "^2019.3"
 ipython = "^7.13.0"
+httpx = "^0.12.1"
+async_lru = "^1.0.2"
+selectorlib = "^0.16.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"
