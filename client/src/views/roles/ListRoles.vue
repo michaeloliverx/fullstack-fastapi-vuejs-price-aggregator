@@ -97,7 +97,7 @@ import { IRoleData } from '@/api/types';
 import { RolesModule } from '@/store/modules/roles';
 
 @Component({
-  name: 'ListRole',
+  name: 'ListRoles',
   components: {}
 })
 export default class extends Vue {

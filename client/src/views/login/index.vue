@@ -88,7 +88,7 @@ import { Dictionary } from 'vue-router/types/router';
 import { Form as ElForm, Input } from 'element-ui';
 import { UserMeModule } from '@/store/modules/me';
 import { isValidUsername } from '@/utils/validate';
-import {IUserUpdate} from "@/api/types";
+import { IUserUpdate } from '@/api/types';
 
 @Component({
   name: 'Login',
@@ -117,7 +117,7 @@ export default class extends Vue {
   };
 
   private loginRules = {
-    username: [{ trigger: 'blur' }],
+    username: [{ trigger: 'blur', required: true, message: 'requird field m8' }],
     password: [{ trigger: 'blur' }]
   };
 

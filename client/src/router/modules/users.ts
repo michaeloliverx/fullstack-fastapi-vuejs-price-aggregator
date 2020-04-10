@@ -15,7 +15,7 @@ const usersRouter: RouteConfig = {
     {
       path: "list",
       component: () =>
-        import(/* webpackChunkName: "user-list" */ "@/views/users/List.vue"),
+        import(/* webpackChunkName: "user-list" */ "@/views/users/ListUsers.vue"),
       name: "ListUsers",
       meta: { title: "List Users", icon: "list" }
     },
@@ -23,7 +23,7 @@ const usersRouter: RouteConfig = {
       path: "create",
       component: () =>
         import(
-          /* webpackChunkName: "user-create" */ "@/views/users/Create.vue"
+          /* webpackChunkName: "user-create" */ "@/views/users/CreateUser.vue"
         ),
       name: "CreateUser",
       meta: { title: "Create User", icon: "form" }
@@ -31,7 +31,7 @@ const usersRouter: RouteConfig = {
     {
       path: "edit/:id",
       component: () =>
-        import(/* webpackChunkName: "user-edit" */ "@/views/users/Edit.vue"),
+        import(/* webpackChunkName: "user-edit" */ "@/views/users/EditUser.vue"),
       name: "EditUser",
       meta: { title: "Edit User", icon: "form", hidden: true }
     }

@@ -15,7 +15,7 @@ const rolesRouter: RouteConfig = {
     {
       path: "list",
       component: () =>
-        import(/* webpackChunkName: "role-list" */ "@/views/roles/List.vue"),
+        import(/* webpackChunkName: "role-list" */ "@/views/roles/ListRoles.vue"),
       name: "ListRoles",
       meta: { title: "List Roles", icon: "list" }
     },
@@ -23,7 +23,7 @@ const rolesRouter: RouteConfig = {
       path: "create",
       component: () =>
         import(
-          /* webpackChunkName: "role-create" */ "@/views/roles/List.vue"
+          /* webpackChunkName: "role-create" */ "@/views/roles/CreateRole.vue"
         ),
       name: "CreateRole",
       meta: { title: "Create Role", icon: "form" }
@@ -31,7 +31,7 @@ const rolesRouter: RouteConfig = {
     {
       path: "edit/:id",
       component: () =>
-        import(/* webpackChunkName: "role-edit" */ "@/views/roles/List.vue"),
+        import(/* webpackChunkName: "role-edit" */ "@/views/roles/ListRoles.vue"),
       name: "EditRole",
       meta: { title: "Edit Role", icon: "form", hidden: true }
     }
