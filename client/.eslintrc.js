@@ -4,7 +4,6 @@ module.exports = {
     node: true,
   },
   'extends': [
-    'prettier',
     'plugin:vue/recommended',
     '@vue/standard',
     '@vue/typescript/recommended',
