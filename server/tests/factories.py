@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 import factory
@@ -7,7 +8,7 @@ from factory.faker import Faker
 from factory.fuzzy import FuzzyChoice, FuzzyDateTime, FuzzyText
 
 from app.enums import userenums
-from app.models import rolemodels, usermodels
+from app.models import rolemodels, shopmodels, usermodels
 from app.service.passwordservice import get_password_hash
 
 from . import common
@@ -29,16 +30,6 @@ class TimeStampFactory(BaseFactory):
 
     created_at = FuzzyDateTime(datetime(2020, 1, 1, tzinfo=pytz.UTC))
     updated_at = FuzzyDateTime(datetime(2020, 1, 1, tzinfo=pytz.UTC))
-
-
-class RoleFactory(TimeStampFactory, BaseFactory):
-    """Role factory."""
-
-    class Meta:
-        model = rolemodels.Role
-
-    name = FuzzyText()
-    description = FuzzyText()
 
 
 class UserFactory(TimeStampFactory, BaseFactory):
@@ -66,3 +57,26 @@ class UserFactory(TimeStampFactory, BaseFactory):
             # A list of roles were passed in, use them
             for role in extracted:
                 self.roles.append(role)
+
+
+class RoleFactory(TimeStampFactory, BaseFactory):
+    """Role factory."""
+
+    class Meta:
+        model = rolemodels.Role
+
+    name = FuzzyText()
+    description = FuzzyText()
+
+
+class ShopFactory(TimeStampFactory, BaseFactory):
+    """Shop factory."""
+
+    class Meta:
+        model = shopmodels.Shop
+
+    name = FuzzyText()
+    url = FuzzyText()
+    query_url = FuzzyText()
+    render_javascript = Faker("boolean")
+    listing_page_selector = {"data": "here"}

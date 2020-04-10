@@ -40,12 +40,12 @@ def create_test_database():
         drop_database(url)
     create_database(url)
 
-    # # Create tables with SQLAlchemy
-    # SQLAlchemyBase.metadata.create_all(_engine)
+    # Create tables with SQLAlchemy
+    SQLAlchemyBase.metadata.create_all(engine)
 
-    # Create tables using Alembic scripts
-    alembic_cfg = AlembicConfig("alembic.ini")
-    alembic_cmd.upgrade(config=alembic_cfg, revision="head")
+    # # Create tables using Alembic scripts
+    # alembic_cfg = AlembicConfig("alembic.ini")
+    # alembic_cmd.upgrade(config=alembic_cfg, revision="head")
 
     yield  # Run the tests.
 

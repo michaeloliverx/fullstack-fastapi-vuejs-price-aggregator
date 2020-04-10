@@ -23,6 +23,7 @@ class User(SQLAlchemyTS, SQLAlchemyIntPK, SQLAlchemyBase):
 
     # Relationships
     roles = relationship("Role", secondary="user_roles")
+    # shops = relationship("Shop", secondary="user_shops")
 
     @property
     def role_names(self) -> List[str]:
