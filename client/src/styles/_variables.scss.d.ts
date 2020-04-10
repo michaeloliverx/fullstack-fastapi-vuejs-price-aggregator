@@ -6,4 +6,4 @@ export interface IScssVariables {
 
 export const variables: IScssVariables;
 
-export default variables;
+export default variables

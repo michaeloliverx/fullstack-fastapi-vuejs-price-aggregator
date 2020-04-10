@@ -1,39 +1,51 @@
-/* eslint camelcase: 0 */
-
 import { UserStatus } from './enums';
 
-export interface IArticleData {
+export interface ITokenData {
+  access_token: string
+  token_type: string
+}
+
+export interface IUserData {
   id: number
-  status: string
-  title: string
-  abstractContent: string
-  fullContent: string
-  sourceURL: string
-  imageURL: string
-  timestamp: string | number
-  platforms: string[]
-  disableComment: boolean
-  importance: number
-  author: string
-  reviewer: string
-  type: string
-  pageviews: number
+  email: string
+  first_name: string
+  last_name: string
+  status: UserStatus
+  created_at: Date
+  updated_at: Date
 }
 
-export interface IUser {
-  id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  status: UserStatus;
-  created_at: Date;
-  updated_at: Date;
+export interface IUserCreate {
+  email: string
+  first_name: string
+  last_name: string
+  password: string
+  status?: UserStatus
 }
 
-export interface IRole {
-  id: number,
-  name: string,
-  description: string,
-  created_at: Date;
-  updated_at: Date;
+export interface IUserUpdate {
+  email?: string
+  first_name?: string
+  last_name?: string
+  password?: string
+  status?: UserStatus
+}
+
+
+export interface IRoleData {
+  id: number
+  name: string
+  description: string
+  created_at: Date
+  updated_at: Date
+}
+
+export interface IRoleCreate {
+  name?: string
+  description: string
+}
+
+export interface IRoleUpdate {
+  name?: string
+  description?: string
 }

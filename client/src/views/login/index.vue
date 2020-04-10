@@ -10,7 +10,7 @@
     >
       <div class="title-container">
         <h3 class="title">
-          Login Form
+          Please login to continue
         </h3>
       </div>
 
@@ -21,34 +21,47 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
+          :placeholder="Username"
           name="username"
           type="text"
+          tabindex="1"
           autocomplete="on"
-          placeholder="username"
         />
       </el-form-item>
 
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon name="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="password"
-          name="password"
-          autocomplete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span
-          class="show-pwd"
-          @click="showPwd"
-        >
-          <svg-icon :name="passwordType === 'password' ? 'eye-off' : 'eye-on'" />
-        </span>
-      </el-form-item>
+      <el-tooltip
+        v-model="capsTooltip"
+        content="Caps lock is On"
+        placement="right"
+        manual
+      >
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon name="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :placeholder="Password"
+            :type="passwordType"
+            name="password"
+            tabindex="2"
+            autocomplete="on"
+            @keyup.native="checkCapslock"
+            @blur="capsTooltip = false"
+            @keyup.enter.native="handleLogin"
+          />
+          <span
+            class="show-pwd"
+            @click="showPwd"
+          >
+            <svg-icon
+              :name="passwordType === 'password' ? 'eye-off' : 'eye-on'"
+            />
+          </span>
+        </el-form-item>
+      </el-tooltip>
 
       <el-button
         :loading="loading"
@@ -56,13 +69,12 @@
         style="width:100%; margin-bottom:30px;"
         @click.native.prevent="handleLogin"
       >
-        Sign in
+        Login
       </el-button>
 
       <div style="position:relative">
         <div class="tips">
-          <span> username: admin </span>
-          <span> password: any </span>
+          <span>Tips here</span>
         </div>
       </div>
     </el-form>
@@ -74,11 +86,13 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { Route } from 'vue-router';
 import { Dictionary } from 'vue-router/types/router';
 import { Form as ElForm, Input } from 'element-ui';
-import { UserModule } from '@/store/modules/user';
+import { UserMeModule } from '@/store/modules/me';
 import { isValidUsername } from '@/utils/validate';
+import {IUserUpdate} from "@/api/types";
 
 @Component({
-  name: 'Login'
+  name: 'Login',
+  components: {}
 })
 export default class extends Vue {
   private validateUsername = (rule: any, value: string, callback: Function) => {
@@ -88,6 +102,7 @@ export default class extends Vue {
       callback();
     }
   };
+
   private validatePassword = (rule: any, value: string, callback: Function) => {
     if (value.length < 6) {
       callback(new Error('The password can not be less than 6 digits'));
@@ -95,17 +110,20 @@ export default class extends Vue {
       callback();
     }
   };
+
   private loginForm = {
     username: 'mo175@live.com',
-    password: 'Qwerty123!'
+    password: 'password'
   };
+
   private loginRules = {
     username: [{ trigger: 'blur' }],
-    password: [{ validator: this.validatePassword, trigger: 'blur' }]
+    password: [{ trigger: 'blur' }]
   };
+
   private passwordType = 'password';
   private loading = false;
-  private showDialog = false;
+  private capsTooltip = false;
   private redirect?: string;
   private otherQuery: Dictionary<string> = {};
 
@@ -128,6 +146,12 @@ export default class extends Vue {
     }
   }
 
+  private checkCapslock(e: KeyboardEvent) {
+    const { key } = e;
+    this.capsTooltip =
+      key !== null && key.length === 1 && key >= 'A' && key <= 'Z';
+  }
+
   private showPwd() {
     if (this.passwordType === 'password') {
       this.passwordType = '';
@@ -139,19 +163,42 @@ export default class extends Vue {
     });
   }
 
+  // private submit() {
+  //   const updateData: IUserUpdate = {};
+  //   if (this.password !== '') {
+  //     updateData.password = this.password;
+  //   }
+  //   /*
+  //   Does API request to update current user with data currently inside component.
+  //   on error will loop through details and create message toast.
+  //
+  //    */
+  //   UserMeModule.UpdateUserMe(this.user).then(() => {
+  //     this.$message({
+  //       message: 'User information has been updated successfully',
+  //       type: 'success',
+  //       duration: 5 * 1000
+  //     });
+  //   }).catch((rejects) => {
+  //     const { detail } = rejects.response.data;
+  //     detail.map((detail: { msg: any }) =>
+  //       this.$message({
+  //         message: detail.msg,
+  //         type: 'error',
+  //         duration: 5 * 1000
+  //       }));
+  //   });
+  // };
+
   private handleLogin() {
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true;
-        await UserModule.Login(this.loginForm);
-        this.$router.push({
+        await UserMeModule.Login(this.loginForm);
+        await this.$router.push({
           path: this.redirect || '/',
           query: this.otherQuery
         });
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.loading = false;
-        }, 0.5 * 1000);
       } else {
         return false;
       }
@@ -173,8 +220,12 @@ export default class extends Vue {
 // References: https://www.zhangxinxu.com/wordpress/2018/01/css-caret-color-first-line/
 @supports (-webkit-mask: none) and (not (cater-color: $loginCursorColor)) {
   .login-container .el-input {
-    input { color: $loginCursorColor; }
-    input::first-line { color: $lightGray; }
+    input {
+      color: $loginCursorColor;
+    }
+    input::first-line {
+      color: $lightGray;
+    }
   }
 }
 

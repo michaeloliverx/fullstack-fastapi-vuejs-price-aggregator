@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="!item.meta || !item.meta.hidden"
-    :class="['menu-wrapper', isCollapse ? 'simple-mode' : 'full-mode', {'first-level': isFirstLevel}]"
+    :class="[isCollapse ? 'simple-mode' : 'full-mode', {'first-level': isFirstLevel}]"
   >
-    <template v-if="theOnlyOneChild && !theOnlyOneChild.children">
+    <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
       <sidebar-item-link
         v-if="theOnlyOneChild.meta"
         :to="resolvePath(theOnlyOneChild.path)"
@@ -56,7 +56,7 @@
 <script lang="ts">
 import path from 'path';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Route, RouteConfig } from 'vue-router';
+import { RouteConfig } from 'vue-router';
 import { isExternal } from '@/utils/validate';
 import SidebarItemLink from './SidebarItemLink.vue';
 
@@ -69,10 +69,17 @@ import SidebarItemLink from './SidebarItemLink.vue';
   }
 })
 export default class extends Vue {
-  @Prop({ required: true }) private item!: RouteConfig
-  @Prop({ default: false }) private isCollapse!: boolean
-  @Prop({ default: true }) private isFirstLevel!: boolean
-  @Prop({ default: '' }) private basePath!: string
+  @Prop({ required: true }) private item!: RouteConfig;
+  @Prop({ default: false }) private isCollapse!: boolean;
+  @Prop({ default: true }) private isFirstLevel!: boolean;
+  @Prop({ default: '' }) private basePath!: string;
+
+  get alwaysShowRootMenu() {
+    if (this.item.meta && this.item.meta.alwaysShow) {
+      return true;
+    }
+    return false;
+  }
 
   get showingChildNumber() {
     if (this.item.children) {
@@ -93,7 +100,7 @@ export default class extends Vue {
       return null;
     }
     if (this.item.children) {
-      for (let child of this.item.children) {
+      for (const child of this.item.children) {
         if (!child.meta || !child.meta.hidden) {
           return child;
         }

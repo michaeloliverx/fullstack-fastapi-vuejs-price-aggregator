@@ -18,7 +18,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
   name: 'Hamburger'
 })
 export default class extends Vue {
-  @Prop({ default: false }) private isActive!: boolean
+  @Prop({ default: false }) private isActive!: boolean;
 
   private toggleClick() {
     this.$emit('toggleClick');

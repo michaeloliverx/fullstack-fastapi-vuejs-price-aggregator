@@ -1,28 +1,41 @@
-import request from '@/utils/request';
+import http from '@/utils/request'
+import { IUserData, IUserCreate, IUserUpdate, IRoleData } from './types';
 
-export const getUserMe = (data: any) =>
-  request({
-    url: '/me',
+export const getUsers = (params: any) =>
+  http.request<IUserData[]>({
+    url: '/users',
     method: 'get',
-    data
+    params
   });
 
-export const getUserRoles = (data: any) =>
-  request({
-    url: '/me/roles',
-    method: 'get',
-    data
-  });
-
-export const login = (data: any) =>
-  request({
-    url: '/auth/login',
+export const createUser = (data: IUserCreate) =>
+  http.request({
+    url: `/users`,
     method: 'post',
     data
   });
 
-export const logout = () =>
-  request({
-    url: '/auth/logout',
-    method: 'post'
+export const updateUser = (id: number, data: IUserUpdate) =>
+  http.request({
+    url: `/users/${id}`,
+    method: 'put',
+    data
+  });
+
+export const deleteUser = (id: number) =>
+  http.request({
+    url: `/users/${id}`,
+    method: 'delete',
+  });
+
+export const getUserRoles = (id: number) =>
+  http.request<IRoleData[]>({
+    url: `/users/${id}/roles`,
+    method: 'get',
+  });
+
+export const updateUserRoles = (id: number) =>
+  http.request<IRoleData[]>({
+    url: `/users/${id}/roles`,
+    method: 'get',
   });

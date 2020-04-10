@@ -11,6 +11,11 @@
       class="breadcrumb-container"
     />
     <div class="right-menu">
+      <template v-if="device !== 'mobile'">
+        <header-search class="right-menu-item" />
+        <error-log class="errLog-container right-menu-item hover-effect" />
+        <screenfull class="right-menu-item hover-effect" />
+      </template>
       <el-dropdown
         class="avatar-container right-menu-item hover-effect"
         trigger="click"
@@ -19,32 +24,29 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
+          <router-link to="/profile/">
+            <el-dropdown-item>
+              Profile
+            </el-dropdown-item>
+          </router-link>
           <router-link to="/">
             <el-dropdown-item>
-              Home
+              Dashboard
             </el-dropdown-item>
           </router-link>
           <a
             target="_blank"
-            href="https://github.com/armour/vue-typescript-admin-template/"
-          >
-            <el-dropdown-item>
-              Github
-            </el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
             href="https://armour.github.io/vue-typescript-admin-docs/"
           >
-            <el-dropdown-item>
-              Docs
-            </el-dropdown-item>
+            <el-dropdown-item>Docs</el-dropdown-item>
           </a>
-          <el-dropdown-item divided>
-            <span
-              style="display:block;"
-              @click="logout"
-            >LogOut</span>
+          <el-dropdown-item
+            divided
+            @click.native="logout"
+          >
+            <span style="display:block;">
+              Log Out
+            </span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -55,15 +57,21 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { AppModule } from '@/store/modules/app';
-import { UserModule } from '@/store/modules/user';
+import { UserMeModule } from '@/store/modules/me';
 import Breadcrumb from '@/components/Breadcrumb/index.vue';
+import ErrorLog from '@/components/ErrorLog/index.vue';
 import Hamburger from '@/components/Hamburger/index.vue';
+import HeaderSearch from '@/components/HeaderSearch/index.vue';
+import Screenfull from '@/components/Screenfull/index.vue';
 
 @Component({
   name: 'Navbar',
   components: {
     Breadcrumb,
-    Hamburger
+    ErrorLog,
+    Hamburger,
+    HeaderSearch,
+    Screenfull
   }
 })
 export default class extends Vue {
@@ -74,12 +82,13 @@ export default class extends Vue {
   get device() {
     return AppModule.device.toString();
   }
+
   private toggleSideBar() {
     AppModule.ToggleSideBar(false);
   }
 
   private async logout() {
-    await UserModule.LogOut();
+    await UserMeModule.LogOut();
     this.$router.push(`/login?redirect=${this.$route.fullPath}`);
   }
 }
@@ -91,7 +100,7 @@ export default class extends Vue {
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .hamburger-container {
     line-height: 46px;
@@ -99,16 +108,21 @@ export default class extends Vue {
     float: left;
     padding: 0 15px;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(0, 0, 0, 0.025);
     }
   }
 
   .breadcrumb-container {
     float: left;
+  }
+
+  .errLog-container {
+    display: inline-block;
+    vertical-align: top;
   }
 
   .right-menu {
@@ -130,10 +144,10 @@ export default class extends Vue {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, 0.025);
         }
       }
     }
