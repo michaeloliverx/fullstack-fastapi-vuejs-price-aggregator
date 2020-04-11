@@ -23,13 +23,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import { UserMeModule } from '@/store/modules/me';
 
 @Component({
-  name: 'DashboardEditor',
+  name: 'DashboardUser',
   components: {
   }
 })
 export default class extends Vue {
-  private emptyGif = 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3';
-
   get name() {
     return UserMeModule.user.first_name;
   }

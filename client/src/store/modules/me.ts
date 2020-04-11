@@ -1,11 +1,11 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
-import { getUserMe, getUserMeRoles, updateUserMe } from '@/api/me';
+import {getUserMe, getUserMeRoles, getUserMeShops, updateUserMe, updateUserMeShops} from '@/api/me';
 import { login, logout, register } from '@/api/auth';
 import { getToken, setToken, removeToken } from '@/utils/cookies'
 import router, { resetRouter } from '@/router'
 import { TagsViewModule } from './tags-view'
 import store from '@/store'
-import { IRoleData, IUserData, IUserUpdate } from '@/api/types';
+import { IRoleData, IUserData, IUserUpdate, IShopData } from '@/api/types';
 
 export interface IUserMeState {
   user: IUserData;
@@ -18,10 +18,16 @@ class UserMe extends VuexModule implements IUserMeState {
   public token = getToken() || '';
   public user: IUserData = {} as IUserData;
   public roles: IRoleData[] = [];
+  public shops: IShopData[] = [];
 
   // Returns an array of the current roles
   get role_names() {
     return this.roles.map(a => a.name);
+  }
+
+  // Returns array of shop ids
+  get shop_ids() {
+    return this.shops.map(a => a.id)
   }
 
   @Mutation
@@ -37,6 +43,11 @@ class UserMe extends VuexModule implements IUserMeState {
   @Mutation
   private SET_ROLES(roles: IRoleData[]) {
     this.roles = roles
+  }
+
+  @Mutation
+  private SET_SHOPS(shops: IShopData[]) {
+    this.shops = shops
   }
 
   @Action({ rawError: true })
@@ -101,6 +112,18 @@ class UserMe extends VuexModule implements IUserMeState {
   public async UpdateUserMe(updateData: IUserUpdate) {
     const { data } = await updateUserMe(updateData);
     this.SET_USER(data)
+  }
+
+  @Action
+  public async GetUserMeShops() {
+    const { data } = await getUserMeShops({});
+    this.SET_SHOPS(data)
+  }
+
+  @Action
+  public async UpdateUserMeShops(shopIds: Array<number>) {
+    const { data } = await updateUserMeShops(shopIds);
+    this.SET_SHOPS(data)
   }
 
 }

@@ -21,7 +21,7 @@
         trigger="click"
       >
         <div class="avatar-wrapper">
-          <i class="el-icon-caret-bottom" />
+          <i class="el-icon-user-solid" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/">
@@ -156,9 +156,6 @@ export default class extends Vue {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
         .user-avatar {
           cursor: pointer;
           width: 40px;

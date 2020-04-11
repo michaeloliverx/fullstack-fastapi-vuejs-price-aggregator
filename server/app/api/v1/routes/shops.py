@@ -7,7 +7,7 @@ from app.db.session import get_db
 from app.models import shopmodels
 from app.service import scraperservice, shopservice
 
-from ..dependencies.auth import admin_role, user_role
+from ..dependencies.auth import RoleChecker, admin_role, user_role
 from ..dependencies.or_404 import get_shop_or_404
 
 router = APIRouter()
@@ -22,7 +22,9 @@ def populate_scrapers():
 
 
 @router.get(
-    "/", response_model=List[shopmodels.ShopRead], dependencies=[Depends(user_role)]
+    "/",
+    response_model=List[shopmodels.ShopRead],
+    dependencies=[Depends(RoleChecker(["admin", "user"]))],
 )
 def get_shops(*, db_session: orm.Session = Depends(get_db)):
     """

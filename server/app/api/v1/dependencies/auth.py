@@ -1,3 +1,5 @@
+from typing import List
+
 import jwt
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordBearer
@@ -55,23 +57,27 @@ def get_current_active_user(current_user: usermodels.User = Security(get_current
 
 
 class RoleChecker:
-    def __init__(self, role: str) -> None:
-        self.role = role
+    def __init__(self, roles: List[str]) -> None:
+        self.roles = roles
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}: {self.role}"
+        return f"{self.__class__.__name__}: Roles: {','.join(self.roles)}"
 
     def __call__(
         self, current_user: usermodels.User = Security(get_current_active_user)
     ) -> usermodels.User:
-        if self.role not in current_user.role_names:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="The current user does not have enough privilege's to access this resource.",
-            )
-        return current_user
+        for role in self.roles:
+            if role in current_user.role_names:
+                return current_user
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The current user does not have enough privilege's to access this resource.",
+        )
 
 
 # Define roles here
-user_role = RoleChecker(USER_ROLE)
-admin_role = RoleChecker(ADMIN_ROLE)
+user_role = RoleChecker([USER_ROLE])
+
+# Admin role allows all privileges
+admin_role = RoleChecker([ADMIN_ROLE, USER_ROLE])

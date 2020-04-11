@@ -8,6 +8,7 @@ import { IPermissionState } from './modules/permission'
 import { ISettingsState } from './modules/settings'
 import { IUsersState } from "@/store/modules/users"
 import { IRolesState } from "@/store/modules/roles"
+import { IShopsState } from "@/store/modules/shops"
 
 Vue.use(Vuex);
 
@@ -20,6 +21,7 @@ export interface IRootState {
   settings: ISettingsState
   users: IUsersState
   roles: IRolesState
+  shops: IShopsState
 }
 
 // Declare empty store first, dynamically register all modules later.

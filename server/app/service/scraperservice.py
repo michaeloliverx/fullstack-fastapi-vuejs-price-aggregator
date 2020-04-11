@@ -6,7 +6,7 @@ import httpx
 import selectorlib
 from sqlalchemy import orm
 
-from app.models import shopmodels
+from app.models import shopmodels, scrapermodels
 from app.service import shopservice
 from app.settings import settings
 
@@ -33,7 +33,7 @@ class Scraper:
 
     async def query_listings(
         self, client: httpx.AsyncClient, query: str, limit: int = 10
-    ) -> dict:
+    ) -> scrapermodels.ShopListings:
 
         url = self._build_query_url(query)
         html = await fetch_page(url=url, client=client)
@@ -48,7 +48,7 @@ class Scraper:
             "name": self._shop.name,
             "listings": results,
         }
-        return response_object
+        return scrapermodels.ShopListings(id=self._shop.id, name=self._shop.name, listings=results)
 
 
 async def fetch_page(url: str, client: httpx.AsyncClient):

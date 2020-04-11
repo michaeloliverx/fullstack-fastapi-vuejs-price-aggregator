@@ -7,6 +7,7 @@ import Layout from "@/layout/index.vue";
 /* Router modules */
 import usersRouter from "./modules/users";
 import rolesRouter from "./modules/roles";
+import shopsRouter from "@/router/modules/shops";
 
 Vue.use(Router);
 
@@ -132,6 +133,23 @@ export const asyncRoutes: RouteConfig[] = [
   /** when your routing map is too long, you can split it into small modules **/
   usersRouter,
   rolesRouter,
+  shopsRouter,
+  {
+    path: '/prices',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import(/* webpackChunkName: "prices" */ '@/views/prices/Index.vue'),
+        name: 'Prices',
+        meta: {
+          title: 'Prices',
+          icon: 'shopping',
+          noCache: true
+        }
+      }
+    ]
+  },
   {
     path: "*",
     redirect: "/404",
