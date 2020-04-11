@@ -2,8 +2,8 @@ from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy import orm
 
 from app.db.session import get_db
-from app.models import rolemodels, usermodels
-from app.service import roleservice, userservice
+from app.models import rolemodels, shopmodels, usermodels
+from app.service import roleservice, shopservice, userservice
 
 
 def get_role_by_id_or_404(
@@ -51,3 +51,19 @@ def get_user_or_404(
             detail="Specified user was not found.",
         )
     return user
+
+
+def get_shop_or_404(
+    db_session: orm.Session = Depends(get_db),
+    shop_id: int = Path(..., alias="id", ge=1),
+) -> shopmodels.Shop:
+    """
+    Route dependency that retrieves a shop by id or raises 404.
+    """
+    shop = shopservice.get(db_session=db_session, id_=shop_id)
+    if not shop:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified shop was not found.",
+        )
+    return shop

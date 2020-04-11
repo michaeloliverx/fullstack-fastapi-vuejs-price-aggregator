@@ -4,8 +4,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import rolemodels, usermodels
-from app.service import roleservice, userservice
+from app.models import rolemodels, shopmodels, usermodels
+from app.service import roleservice, shopservice, userservice
 
 from ..dependencies.or_404 import get_user_or_404
 
@@ -110,5 +110,39 @@ def update_user_roles(
             detail="One of the specified roles was not found man. I don't know which one yet.",
         )
 
-    user.roles = [role_objs]
+    user.roles = role_objs
+    db_session.commit()
+
+
+@router.get(
+    "/{id}/shops", response_model=List[shopmodels.ShopRead],
+)
+def read_user_shops(user: usermodels.User = Depends(get_user_or_404),):
+    """
+    Retrieve a list of shops assigned to an individual user.
+    """
+    return user.shops
+
+
+@router.put(
+    "/{id}/shops", response_model=List[shopmodels.ShopRead],
+)
+def update_user_shops(
+    *,
+    db_session: Session = Depends(get_db),
+    user: usermodels.User = Depends(get_user_or_404),
+    shops_ids: List[int] = Body(...),
+):
+    """
+    Update the assigned shops of an individual user.
+    """
+
+    shop_objs = shopservice.get_multiple_by_ids(db_session=db_session, ids_=shops_ids)
+    if len(shops_ids) != len(shops_ids):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="One of the specified shops was not found man.",
+        )
+
+    user.roles = [shop_objs]
     db_session.commit()

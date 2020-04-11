@@ -42,7 +42,7 @@ class ShopCreate(PydanticBase):
 class ShopRead(PydanticTS, ShopCreate):
     """Attributes to return via API"""
 
-    pass
+    id: int
 
 
 class ShopUpdate(PydanticBase):

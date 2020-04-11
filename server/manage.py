@@ -5,7 +5,7 @@ import pydantic
 import typer
 from tabulate import tabulate
 
-from app.db.initdb import initdb
+from app.db.initdb import init_shops
 from app.enums import logenums, userenums
 from app.main import app
 from app.models import rolemodels, usermodels
@@ -310,6 +310,8 @@ def seeddb():
                 ),
                 role=admin_role,
             )
+
+            init_shops(db_session=db_session)
 
     typer.echo(Messages.success)
 

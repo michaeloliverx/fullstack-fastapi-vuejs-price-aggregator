@@ -3,3 +3,196 @@ roles:
     description: Permits administrator privileges.
   - name: user
     description: Normal user privileges.
+
+shops:
+
+  - url: www.aldi.co.uk
+    name: aldi
+    query_url: /search?category=ALL&text={query}
+    render_javascript: false
+    listing_page_selector:
+      items:
+        css: 'div.hover-item:nth-of-type(n+6)'
+        multiple: true
+        type: Text
+        children:
+          url:
+            css: a.category-item__wrapper-link
+            type: Link
+          name:
+            css: 'ul.category-item__meta li.category-item__title'
+            type: Text
+          price:
+            css: 'ul.category-item__meta.list-unstyled > a > li'
+            type: Text
+          price_per_unit:
+            css: a.category-item__wrapper-link
+            type: Attribute
+            attribute: category-item__pricePerUnit
+          image_url:
+            css: 'a.category-item__link picture.category-item__image source:first-of-type'
+            type: Attribute
+            attribute: srcset
+
+  - url: www.amazon.co.uk
+    name: amazon_pantry
+    query_url: /s?k={query}&i=pantry
+    render_javascript: false
+    listing_page_selector:
+      items:
+        css: '#search div.s-result-item'
+        multiple: true
+        type: Text
+        children:
+          price:
+            css: span.a-offscreen
+            type: Text
+          name:
+            css: h2
+            type: Text
+          url:
+            css: a
+            type: Link
+          image_url:
+            css: img.s-image
+            type: Attribute
+            attribute: src
+          price_per_unit:
+            css: span.a-size-base.a-color-secondary
+            type: Text
+
+  - url: groceries.asda.com
+    name: asda
+    query_url: /search/{query}
+    render_javascript: true
+    listing_page_selector:
+      items:
+        css: 'section.products-tab li.co-item'
+        multiple: true
+        type: Text
+        children:
+          price:
+            css: strong.co-product__price
+            type: Text
+          price_per_unit:
+            css: span.co-product__price-per-uom
+            type: Text
+          name:
+            css: a.co-product__anchor
+            type: Text
+          url:
+            css: a.co-product__anchor
+            type: Link
+          image_url:
+            css: img.co-product__image
+            type: Attribute
+            attribute: src
+
+  - url: www.iceland.co.uk
+    name: iceland
+    query_url: /search?q={query}
+    render_javascript: false
+    listing_page_selector:
+      items:
+        css: 'ul.search-result-items div.product-tile'
+        multiple: true
+        type: Text
+        children:
+          name:
+            css: 'a.name-link span'
+            type: Text
+          price:
+            css: 'span.product-sales-price span'
+            type: Text
+          price_per_unit:
+            css: div.product-pricing-info
+            type: Text
+          image_url:
+            css: img.thumb-link
+            type: Attribute
+            attribute: src
+          url:
+            css: 'div.product-image a.thumb-link'
+            type: Attribute
+            attribute: href
+
+  - url: groceries.morrisons.com
+    name: morrisons
+    query_url: /search?entry={query}
+    render_javascript: false
+    listing_page_selector:
+      items:
+        css: 'ul.fops.fops-regular li.fops-item:nth-of-type(n+1)'
+        multiple: true
+        type: Text
+        children:
+          price:
+            css: span.fop-price
+            type: Text
+          name:
+            css: h4.fop-title
+            type: Text
+          price_per_unit:
+            css: span.fop-unit-price
+            type: Text
+          image_url:
+            css: img.fop-img
+            type: Attribute
+            attribute: src
+          url:
+            css: div.fop-contentWrapper
+            type: Link
+
+  - url: www.sainsburys.co.uk
+    name: sainsburys
+    query_url: /webapp/wcs/stores/servlet/SearchDisplayView?storeId=10151&orderBy=RELEVANCE&searchTerm={query}
+    render_javascript: false
+    listing_page_selector:
+      items:
+        css: 'div.section li.gridItem'
+        multiple: true
+        type: Text
+        children:
+          url:
+            css: 'h3 a'
+            type: Link
+          name:
+            css: h3
+            type: Text
+          price:
+            css: p.pricePerUnit
+            type: Text
+          price_per_unit:
+            css: p.pricePerMeasure
+            type: Text
+          image_url:
+            css: 'h3 img'
+            type: Attribute
+            attribute: src
+
+  - url: www.tesco.com
+    name: tesco
+    query_url: /groceries/en-GB/search?query={query}
+    render_javascript: false
+    listing_page_selector:
+      items:
+        css: li.product-list--list-item
+        multiple: true
+        type: Text
+        children:
+          url:
+            css: a.sc-kAzzGY
+            type: Link
+          name:
+            css: div.product-details--content
+            type: Text
+          price:
+            css: 'div.price-per-sellable-unit div'
+            type: Text
+          price_per_unit:
+            css: div.price-per-quantity-weight
+            type: Text
+          image_url:
+            css: img.product-image
+            type: Attribute
+            attribute: src

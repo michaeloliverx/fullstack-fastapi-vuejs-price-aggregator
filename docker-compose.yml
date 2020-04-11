@@ -52,3 +52,8 @@ services:
     image: mailhog/mailhog:v1.0.0
     ports:
       - "8025:8025"
+
+  splash-browser:
+    image: scrapinghub/splash
+    ports:
+    - "8050:8050"

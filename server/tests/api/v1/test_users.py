@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from tests import factories
+
 
 @pytest.mark.parametrize(
     "url, method",
@@ -155,3 +157,19 @@ def test_delete(admin_role_client: TestClient):
     # Ensure user has been deleted from the database
     resp = admin_role_client.get(url)
     assert resp.status_code == 404
+
+
+def test_update_user_roles(admin_role_client: TestClient):
+
+    # Create some roles in the db first
+    roles = [factories.RoleFactory(), factories.RoleFactory()]
+    role_ids = [role.id for role in roles]
+
+    # Create a user to assign the roles
+    user = factories.UserFactory()
+    user_id = user.id
+
+    url = f"/api/v1/users/{user_id}/roles"
+
+    resp = admin_role_client.put(url=url, json=role_ids)
+    assert resp.status_code == 200, resp.text

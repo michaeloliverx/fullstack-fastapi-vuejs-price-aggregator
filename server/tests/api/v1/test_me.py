@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from tests import factories
+
 
 def test_read_me(user_role_client: TestClient):
     url = "/api/v1/me"
@@ -53,3 +55,13 @@ def test_read_me_roles(user_role_client: TestClient):
 
     roles = resp.json()
     assert roles[0]["name"] == "user"
+
+
+def test_update_me_shops(user_role_client: TestClient):
+    shops = [factories.ShopFactory(), factories.ShopFactory()]
+    shop_ids = [shop.id for shop in shops]
+
+    url = "/api/v1/me/shops"
+
+    resp = user_role_client.put(url=url, json=shop_ids)
+    assert resp.status_code == 200, resp.text
