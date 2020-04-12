@@ -1,11 +1,10 @@
-from .meta.pydanticbase import PydanticBase
-
-
 import logging
 import re
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel, validator
+
+from .meta.pydanticbase import PydanticBase
 
 logger = logging.getLogger(__name__)
 

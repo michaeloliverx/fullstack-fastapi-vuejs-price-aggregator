@@ -14,7 +14,7 @@
       no-data-text="No shops available"
     >
       <el-option
-        v-for="shop in shops"
+        v-for="shop in allShops"
         :key="shop.id"
         :label="shop.name"
         :value="shop.id"
@@ -64,32 +64,32 @@ import { ShopsModule } from '@/store/modules/shops';
 export default class extends Vue {
   private loading = false;
   private selectedShops = [];
-    private tableProps = [
-      { name: 'name', type: 'text', label: 'Name', align: 'center', minWidth: 80 }
-    ]
+  private tableProps = [
+    { name: 'name', type: 'text', label: 'Name', align: 'center', minWidth: 80 }
+  ]
 
-    get userShops() {
-      return UserMeModule.shops;
-    }
+  get userShops() {
+    return UserMeModule.shops;
+  }
 
-    get shops() {
-      return ShopsModule.shops;
-    }
+  get allShops() {
+    return ShopsModule.shops;
+  }
 
-    created() {
-      this.getData();
-    }
+  created() {
+    this.getData();
+  }
 
-    private async getData() {
-      await UserMeModule.GetUserMeShops();
-      await ShopsModule.GetShops({});
-    }
+  private async getData() {
+    await UserMeModule.GetUserMeShops();
+    await ShopsModule.GetShops({});
+  }
 
-    private async handleUpdate() {
-      this.loading = true;
-      await UserMeModule.UpdateUserMeShops(this.selectedShops);
-      this.loading = false;
-    }
+  private async handleUpdate() {
+    this.loading = true;
+    await UserMeModule.UpdateUserMeShops(this.selectedShops);
+    this.loading = false;
+  }
 }
 </script>
 

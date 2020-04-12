@@ -76,7 +76,8 @@
         <div class="tips">
           <el-link
             type="primary"
-            @click="$router.push('/register')"
+            href="https://www.google.com"
+            target="_blank"
           >
             Sign Up
           </el-link>
@@ -105,24 +106,13 @@ import { isValidUsername } from '@/utils/validate';
 import { IUserUpdate } from '@/api/types';
 
 @Component({
-  name: 'Login',
+  name: 'Register',
   components: {}
 })
 export default class extends Vue {
-  private validateUsername = (rule: any, value: string, callback: Function) => {
-    if (!isValidUsername(value)) {
-      callback(new Error('Please enter the correct user name'));
-    } else {
-      callback();
-    }
-  };
 
-  private validatePassword = (rule: any, value: string, callback: Function) => {
-    if (value.length < 6) {
-      callback(new Error('The password can not be less than 6 digits'));
-    } else {
-      callback();
-    }
+  private registerForm = {
+
   };
 
   private loginForm = {
@@ -141,40 +131,12 @@ export default class extends Vue {
   private redirect?: string;
   private otherQuery: Dictionary<string> = {};
 
-  @Watch('$route', { immediate: true })
-  private onRouteChange(route: Route) {
-    // TODO: remove the "as Dictionary<string>" hack after v4 release for vue-router
-    // See https://github.com/vuejs/vue-router/pull/2050 for details
-    const query = route.query as Dictionary<string>;
-    if (query) {
-      this.redirect = query.redirect;
-      this.otherQuery = this.getOtherQuery(query);
-    }
-  }
-
   mounted() {
     if (this.loginForm.username === '') {
       (this.$refs.username as Input).focus();
     } else if (this.loginForm.password === '') {
       (this.$refs.password as Input).focus();
     }
-  }
-
-  private checkCapslock(e: KeyboardEvent) {
-    const { key } = e;
-    this.capsTooltip =
-      key !== null && key.length === 1 && key >= 'A' && key <= 'Z';
-  }
-
-  private showPwd() {
-    if (this.passwordType === 'password') {
-      this.passwordType = '';
-    } else {
-      this.passwordType = 'password';
-    }
-    this.$nextTick(() => {
-      (this.$refs.password as Input).focus();
-    });
   }
 
   // private submit() {
@@ -219,14 +181,6 @@ export default class extends Vue {
     });
   }
 
-  private getOtherQuery(query: Dictionary<string>) {
-    return Object.keys(query).reduce((acc, cur) => {
-      if (cur !== 'redirect') {
-        acc[cur] = query[cur];
-      }
-      return acc;
-    }, {} as Dictionary<string>);
-  }
 }
 </script>
 

@@ -58,7 +58,13 @@ export const constantRoutes: RouteConfig[] = [
     path: "/login",
     component: () =>
       import(/* webpackChunkName: "login" */ "@/views/login/index.vue"),
-    meta: { hidden: true }
+    meta: { hidden: true, title: 'Login' }
+  },
+  {
+    path: "/register",
+    component: () =>
+      import(/* webpackChunkName: "register" */ "@/views/register/Index.vue"),
+    meta: { hidden: true, title: 'Register' }
   },
   {
     path: "/404",
@@ -143,7 +149,7 @@ export const asyncRoutes: RouteConfig[] = [
         component: () => import(/* webpackChunkName: "prices" */ '@/views/prices/Index.vue'),
         name: 'Prices',
         meta: {
-          title: 'Prices',
+          title: 'Shop Prices',
           icon: 'shopping',
           noCache: true
         }

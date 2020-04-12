@@ -6,7 +6,7 @@ import httpx
 import selectorlib
 from sqlalchemy import orm
 
-from app.models import shopmodels, scrapermodels
+from app.models import scrapermodels, shopmodels
 from app.service import shopservice
 from app.settings import settings
 
@@ -36,7 +36,14 @@ class Scraper:
     ) -> scrapermodels.ShopListings:
 
         url = self._build_query_url(query)
-        html = await fetch_page(url=url, client=client)
+
+        # Use Splash to render our page if required
+        if self._shop.render_javascript:
+            params = {"url": url, "timeout": "5", "images": 0}
+            base_url = "http://splash-browser:8050/render.html"
+            html = await fetch_page(base_url, client=client, params=params)
+        else:
+            html = await fetch_page(url=url, client=client)
 
         results = self._listing_page_extractor.extract(
             html, base_url=self.base_url
@@ -48,12 +55,14 @@ class Scraper:
             "name": self._shop.name,
             "listings": results,
         }
-        return scrapermodels.ShopListings(id=self._shop.id, name=self._shop.name, listings=results)
+        return scrapermodels.ShopListings(
+            id=self._shop.id, name=self._shop.name, listings=results
+        )
 
 
-async def fetch_page(url: str, client: httpx.AsyncClient):
+async def fetch_page(url: str, client: httpx.AsyncClient, **httpx_kwargs):
     """Perform a HTTP GET request on given URL."""
-    response = await client.get(url)
+    response = await client.get(url, **httpx_kwargs)
     html = response.text
     return html
 

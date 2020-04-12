@@ -41,12 +41,12 @@ class UserMe extends VuexModule implements IUserMeState {
   }
 
   @Mutation
-  private SET_ROLES(roles: IRoleData[]) {
+  private SET_USER_ROLES(roles: IRoleData[]) {
     this.roles = roles
   }
 
   @Mutation
-  private SET_SHOPS(shops: IShopData[]) {
+  private SET_USER_SHOPS(shops: IShopData[]) {
     this.shops = shops
   }
 
@@ -77,14 +77,14 @@ class UserMe extends VuexModule implements IUserMeState {
     // Reset visited views and cached views
     TagsViewModule.delAllViews();
     this.SET_TOKEN('');
-    this.SET_ROLES([])
+    this.SET_USER_ROLES([])
   }
 
   @Action
   public ResetToken() {
     removeToken();
     this.SET_TOKEN('');
-    this.SET_ROLES([])
+    this.SET_USER_ROLES([])
   }
 
   @Action
@@ -105,7 +105,7 @@ class UserMe extends VuexModule implements IUserMeState {
     if (!data || data.length <= 0) {
       throw Error('GetUserMeRoles: roles must be a non-null array!');
     }
-    this.SET_ROLES(data);
+    this.SET_USER_ROLES(data);
   }
 
   @Action({ rawError: true })
@@ -117,13 +117,13 @@ class UserMe extends VuexModule implements IUserMeState {
   @Action
   public async GetUserMeShops() {
     const { data } = await getUserMeShops({});
-    this.SET_SHOPS(data)
+    this.SET_USER_SHOPS(data)
   }
 
   @Action
   public async UpdateUserMeShops(shopIds: Array<number>) {
     const { data } = await updateUserMeShops(shopIds);
-    this.SET_SHOPS(data)
+    this.SET_USER_SHOPS(data)
   }
 
 }
