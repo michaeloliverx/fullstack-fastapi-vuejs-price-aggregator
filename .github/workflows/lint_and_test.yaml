@@ -34,7 +34,7 @@ jobs:
       run: docker-compose up --detach --build
     - name: Lint
       working-directory: ./docker
-      run: docker-compose run backend-testing sh scripts/lint.sh
+      run: docker-compose run backend sh scripts/lint.sh
     - name: Test
       working-directory: ./docker
-      run: docker-compose run backend-testing sh scripts/test.sh
+      run: docker-compose run backend sh scripts/test.sh
