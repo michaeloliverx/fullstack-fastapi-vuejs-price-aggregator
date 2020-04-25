@@ -4,7 +4,7 @@ volumes:
   postgres_data: {}
 
 services:
-  backend: &backend
+  backend:
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -19,14 +19,6 @@ services:
       - mailhog
     ports:
       - "8000:8000"
-
-  test:
-    <<: *backend
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-      target: testing
-    ports: []
 
   postgres:
     image: postgres:12.2

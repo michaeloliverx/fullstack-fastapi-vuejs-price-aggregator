@@ -1,0 +1,40 @@
+name: Price Aggregator
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # FastAPI
+      PROJECT_NAME: Backend
+      FIRST_SUPERUSER: user@example.com
+      FIRST_SUPERUSER_PASSWORD: reallysecretpass
+      CORS_WHITELIST: '["http://localhost", "http://localhost:8000"]'
+      USERS_OPEN_REGISTRATION: true
+      # SMTP
+      SMTP_USER: admin@backend.com
+      SMTP_PASSWORD: reallysecretpass
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_TLS: false
+      SMTP_SSL: false
+      # PostgreSQL
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespass
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check docker versions
+      run: |
+        docker-compose --version
+        docker --version
+    - name: Build the docker-compose stack
+      working-directory: ./docker
+      run: docker-compose up --detach --build
+    - name: Lint
+      working-directory: ./docker
+      run: docker-compose run backend-testing sh scripts/lint.sh
+    - name: Test
+      working-directory: ./docker
+      run: docker-compose run backend-testing sh scripts/test.sh
