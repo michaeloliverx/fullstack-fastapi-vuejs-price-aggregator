@@ -3,26 +3,25 @@ from fastapi.testclient import TestClient
 
 from tests import factories
 
-
-@pytest.mark.parametrize(
-    "url, method",
-    (
-        ("/api/v1/users/", "GET",),
-        ("/api/v1/users/", "POST",),
-        ("/api/v1/users/1", "GET",),
-        ("/api/v1/users/1", "PUT",),
-        ("/api/v1/users/1", "DELETE",),
-        ("/api/v1/users/1/roles", "GET",),
-    ),
-)
-def test_endpoints_without_admin_role(
-    user_role_client: TestClient, url: str, method: str
-):
-    """
-    Test all /user endpoints with an authenticated client but without an admin role assigned.
-    """
-    resp = user_role_client.request(method, url, json={})
-    assert 400 <= resp.status_code < 500
+# @pytest.mark.parametrize(
+#     "url, method",
+#     (
+#         ("/api/v1/users/", "GET",),
+#         ("/api/v1/users/", "POST",),
+#         ("/api/v1/users/1", "GET",),
+#         ("/api/v1/users/1", "PUT",),
+#         ("/api/v1/users/1", "DELETE",),
+#         ("/api/v1/users/1/roles", "GET",),
+#     ),
+# )
+# def test_endpoints_without_admin_role(
+#     user_role_client: TestClient, url: str, method: str
+# ):
+#     """
+#     Test all /user endpoints with an authenticated client but without an admin role assigned.
+#     """
+#     resp = user_role_client.request(method, url, json={})
+#     assert 400 <= resp.status_code < 500
 
 
 def test_read_many(admin_role_client: TestClient):
