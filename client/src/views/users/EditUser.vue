@@ -2,6 +2,8 @@
   <div>
     Edit
     {{ user }}
+
+    <el-button type="primary" @click="handleClick">Log</el-button>
   </div>
 </template>
 
@@ -24,8 +26,15 @@ export default class extends Vue {
     status: ''
   };
 
+  private userID = '';
+
   public cancel() {
     router.back();
   }
+
+  public handleClick() {
+    console.log(this.$route);
+  }
+
 }
 </script>

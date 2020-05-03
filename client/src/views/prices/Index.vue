@@ -34,43 +34,70 @@
     </div>
 
     <div class="search-results">
-      <div
-        class="item"
-        v-for="shopResult in results"
-        :key="shopResult.id"
+      <el-row
+        v-for="shop in results"
+        :key="shop.id"
+        :gutter="12"
       >
-        <div
-          v-for="listing in shopResult.listings"
-          :key="listing.url"
+        <h2>{{ shop.name }}</h2>
+        <el-col
+          v-for="item in shop.listings"
+          :key="item.url"
+          :span="8"
         >
           <el-card
-          class="hover">
-            <img
-              :src="listing.image_url"
-              class="image"
-            >
-            <div style="padding: 14px;">
-              <span>{{ listing.name }}</span>
-              <div class="bottom clearfix">
-                <time class="time">{{ listing.price }}</time>
+            class="box-card small"
+            shadow="hover"
+          >
+            <el-row>
+              <el-col :span="4">
+                <div class="card-img">
+                  <el-image
+                    style="width: 100px; height: 100px"
+                    :src="item.image_url"
+                    fit="scale-down"
+                    lazy
+                  />
+                </div>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              {{ item.name }}
+            </el-row>
+
+            <el-row>
+              <span class="item-price">£{{ item.price }}</span>
+            </el-row>
+
+            <el-row>
+              <span class="item-price">£{{ item.price_per_unit }}</span>
+            </el-row>
+
+            <el-row>
+              <el-col>
                 <el-button
                   type="text"
                   class="button"
                 >
-                  View item
+                  <el-link
+                    :href="item.url"
+                    type="primary"
+                  >
+                    View Item
+                  </el-link>
                 </el-button>
-              </div>
-            </div>
+              </el-col>
+            </el-row>
           </el-card>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { UserMeModule } from '@/store/modules/me';
 import { getShopListings } from '@/api/shops';
 import { IShopListings } from '@/api/types';
 import { ShopsModule } from '@/store/modules/shops';
@@ -121,8 +148,12 @@ export default class extends Vue {
   .el-checkbox-group {
     padding: 10px;
   }
-  .listing-card {
-    width: 150px;
+  .box-card {
+    margin: 5px;
+    max-width: 100rem;
+    .item-price {
+      font-weight: bold;
+    }
   }
   .search-terms {
     max-width: 700px;
@@ -131,6 +162,10 @@ export default class extends Vue {
   .item {
     size: 50px;
     max-width: 250px;
+  }
+  .card-img {
+    height: auto;
+    max-width: 30%;
   }
 
 </style>

@@ -39,7 +39,7 @@ class Scraper:
 
         # Use Splash to render our page if required
         if self._shop.render_javascript:
-            params = {"url": url, "timeout": "5", "images": 0}
+            params = {"url": url, "timeout": "7", "images": 0}
             base_url = "http://splash-browser:8050/render.html"
             html = await fetch_page(base_url, client=client, params=params)
         else:
