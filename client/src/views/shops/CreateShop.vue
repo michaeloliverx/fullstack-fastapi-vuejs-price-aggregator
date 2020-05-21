@@ -1,109 +1,138 @@
 <template>
   <div class="app-container">
-    <el-table
-      :data="shops"
-      style="width: 100%"
-    >
-      <el-table-column
-        v-for="prop in tableConfig.props"
-        :key="prop.name"
-        :label="prop.label"
-        :align="prop.align"
-        :min-width="prop.minWidth"
+    <el-card class="box-card">
+      <div
+        slot="header"
+        class="clearfix"
       >
-        <template slot-scope="{row}">
-          <span v-if="prop.type === 'text'">
-            {{ row[prop.name] }}
-          </span>
-          <span v-if="prop.type === 'timestamp'">
-            {{ new Date(row[prop.name]).toDateString() }}
-          </span>
-          <span v-if="prop.type === 'tag'">
-            <el-tag
-              :type="prop.tag[row[prop.name]]"
-            >
-              {{ row[prop.name] }}
-            </el-tag>
-          </span>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        v-if="tableConfig.actions"
-        fixed="right"
-        label="Actions"
+        <span>Create a new role</span>
+      </div>
+      <el-form
+        ref="loginForm"
+        :model="createForm"
+        :rules="createRules"
+        autocomplete="on"
+        label-position="left"
       >
-        <template slot-scope="{row}">
-          <el-button
-            type="primary"
-            plain
-            size="small"
-            icon="el-icon-edit"
-            @click="$router.push('/users/edit/' + row.id)"
-          >
-            Edit
-          </el-button>
+        <el-form-item
+          prop="name"
+          label="Shop Name"
+        >
+          <el-input
+            v-model="createForm.name"
+            type="text"
+          />
+        </el-form-item>
 
-          <el-button
-            type="danger"
-            plain
-            size="small"
-            icon="el-icon-delete"
-            @click="handleDeleteDialog(row)"
-          >
-            Delete
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-form-item
+          prop="baseUrl"
+          label="Base URL"
+        >
+          <el-input
+            v-model="createForm.baseUrl"
+            type="text"
+          />
+        </el-form-item>
+
+        <el-form-item
+          prop="queryUrl"
+          label="Query URL"
+        >
+          <el-input
+            v-model="createForm.queryUrl"
+            type="text"
+          />
+        </el-form-item>
+
+        <el-form-item
+          prop="renderJS"
+          label="Render JavaScript"
+        >
+          <el-switch v-model="createForm.renderJS" />
+        </el-form-item>
+
+        <el-form-item
+          prop="selectors"
+          label="CSS Selectors"
+        >
+          <div class="editor-container">
+            <json-editor
+              ref="jsonEditor"
+              v-model="createForm.selectorJson"
+            />
+          </div>
+        </el-form-item>
+
+        <el-button
+          :loading="loading"
+          type="primary"
+          @click="handleCreate"
+        >
+          Create
+        </el-button>
+
+        <el-button
+          @click="$router.back()"
+        >
+          Cancel
+        </el-button>
+      </el-form>
+    </el-card>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { ShopsModule } from '@/store/modules/shops';
+import { Form as ElForm, Input } from 'element-ui';
+import JsonEditor from '@/components/JsonEditor/index.vue';
 
 @Component({
   name: 'CreateShop',
-  components: {}
+  components: {
+    JsonEditor
+  }
 })
 export default class extends Vue {
-  private loading = true;
+  private loading = false;
 
-  private tableConfig = {
-    props: [
-      { name: 'id', type: 'text', label: 'ID', align: 'center', minWidth: 20 },
-      { name: 'name', type: 'text', label: 'Name', align: 'center', minWidth: 80 },
-      { name: 'created_at', type: 'timestamp', label: 'Created', align: 'center', minWidth: 80 },
-      { name: 'url', type: 'text', label: 'URL', align: 'center', minWidth: 80 },
-      {
-        name: 'render_javascript',
-        label: 'Renders JavaScript',
-        type: 'tag',
-        align: 'center',
-        minWidth: 80,
-        tag: {
-          true: 'primary',
-          false: 'info'
-        }
+  private createForm = {
+    name: '',
+    baseUrl: '',
+    renderJS: false,
+    queryUrl: '',
+    selectorJson: {}
+  };
+
+  private createRules = {
+    name: [{ trigger: 'blur', required: true, message: 'Please enter a name' }],
+    baseUrl: [{ trigger: 'blur', required: true, message: 'Please enter the base URL' }],
+    queryUrl: [{ trigger: 'blur', required: true, message: 'Please enter the query URL' }],
+    selectorJson: [{ trigger: 'blur', required: true, message: 'Please add the CSS selector code' }]
+  };
+
+  mounted() {
+    (this.$refs.name as Input).focus();
+    (this.$refs.description as Input).focus();
+  }
+
+  private handleCreate() {
+    (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
+      if (valid) {
+        this.loading = true;
+      } else {
+        this.$message.error('validation failed');
       }
-    ],
-    actions: [
-      { text: 'Edit', type: 'primary', icon: 'el-icon-edit', size: 'small', goto: '/dashboard' },
-      { text: 'Delete', type: 'danger', icon: 'el-icon-delete', size: 'small', goto: '/dashboard' }
-    ]
-  }
-
-  get shops() {
-    return ShopsModule.shops;
-  }
-
-  created() {
-    ShopsModule.GetShops({});
+    });
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
+.editor-container {
+  position: relative;
+  height: 100%;
+}
+.box-card {
+  max-width: 60rem;
+}
 </style>
