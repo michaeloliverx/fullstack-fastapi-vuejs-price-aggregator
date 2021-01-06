@@ -11,7 +11,7 @@
     "svg": "vsvg -s ./src/icons/svg -t ./src/icons/components --ext ts --es6"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "clipboard": "^2.0.6",
     "codemirror": "^5.53.2",
     "core-js": "^3.6.5",
