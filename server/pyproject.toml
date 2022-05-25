@@ -9,7 +9,7 @@ authors = ["Michael Oliver <mo175@live.com>"]
 python = "3.8.1"
 fastapi = {version = "^0.53.2", extras = ["all"]}
 passlib = {version = "^1.7.2", extras = ["bcrypt"]}
-pyjwt = {version = "^1.7.1", extras = ["crypto"]}
+pyjwt = {version = "^2.4.0", extras = ["crypto"]}
 yagmail = "^0.11"
 alembic = "^1.4.2"
 sqlalchemy = "^1.3.15"
